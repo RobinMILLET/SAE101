@@ -12,5 +12,8 @@
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Canvas />
+    <Canvas>
+        <Label Content="Distance : 0000" Canvas.Left="10" Canvas.Top="10" FontFamily="Arial monospaced for SAP" FontWeight="Bold" FontSize="36"/>
+        <Label Content="Temps : 0000" Canvas.Left="10" Canvas.Top="66" FontFamily="Arial monospaced for SAP" FontWeight="Bold" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+    </Canvas>
 </Window>
