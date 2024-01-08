@@ -16,7 +16,7 @@
             Margin="0,154,0,0"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
-            Content="BONJOUR" />
+            Content="CHANGER" />
 
     </Grid>
 </Window>
