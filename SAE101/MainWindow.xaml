@@ -8,12 +8,39 @@
     Title="NomDuJeu"
     Width="1250"
     Height="750"
-    IsEnabled="False"
+    FocusManager.FocusedElement="{Binding ElementName=Canvas}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Canvas>
-        <Label Content="Distance : 0000" Canvas.Left="10" Canvas.Top="10" FontFamily="Arial monospaced for SAP" FontWeight="Bold" FontSize="36"/>
-        <Label Content="Temps : 0000" Canvas.Left="10" Canvas.Top="66" FontFamily="Arial monospaced for SAP" FontWeight="Bold" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+    <Canvas
+        x:Name="Canvas"
+        Focusable="True"
+        KeyDown="ClavierAppui"
+        KeyUp="ClavierRelache">
+        <Label
+            x:Name="lbDistance"
+            Canvas.Left="10"
+            Canvas.Top="10"
+            Content="Distance : 0000"
+            FontFamily="Arial monospaced for SAP"
+            FontSize="36"
+            FontWeight="Bold" />
+        <Label
+            x:Name="lbTemps"
+            Canvas.Left="10"
+            Canvas.Top="66"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Content="Temps : 0000"
+            FontFamily="Arial monospaced for SAP"
+            FontSize="36"
+            FontWeight="Bold" />
+        <Rectangle
+            x:Name="Joueur"
+            Canvas.Left="250"
+            Canvas.Bottom="400"
+            Width="50"
+            Height="25"
+            Stroke="Black" />
     </Canvas>
 </Window>
