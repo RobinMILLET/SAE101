@@ -8,6 +8,7 @@
     Title="NomDuJeu"
     Width="1250"
     Height="750"
+    Closing="StopTout"
     FocusManager.FocusedElement="{Binding ElementName=Canvas}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
@@ -17,7 +18,11 @@
         Focusable="True"
         KeyDown="ClavierAppui"
         KeyUp="ClavierRelache">
-        <Rectangle Height="5" Canvas.Bottom="420" Width="1250" Fill="#7F46FDF0"/>
+        <Rectangle
+            Canvas.Bottom="420"
+            Width="1250"
+            Height="5"
+            Fill="#7F46FDF0" />
         <Label
             x:Name="lbDistance"
             Canvas.Left="10"
@@ -42,6 +47,16 @@
             Canvas.Bottom="400"
             Width="50"
             Height="25"
-            Stroke="Black" />
+            RenderTransformOrigin="0.5,0.5"
+            Stroke="Black">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform />
+                    <SkewTransform />
+                    <RotateTransform Angle="0" />
+                    <TranslateTransform />
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
     </Canvas>
 </Window>

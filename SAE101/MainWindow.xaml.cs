@@ -40,24 +40,31 @@ namespace SAE101
         private readonly int borneStableP = 15;
         private readonly double frictionAir = 0.1;
         private readonly double frictionEau = 0.15;
-        private readonly double frictionSplash = 0.5;
-        private readonly double frictionStable = 0.1;
+        private readonly double frictionSplash = 0.4;
+        private readonly double frictionStable = 0.15;
         private readonly double accelerationJoueur = 0.5;
         private readonly double flotaison = 0.75;
         private readonly double gravité = 0.3;
         private bool vaSplash = false;
         // Apparence
-        private ImageBrush textureJoueur = new ImageBrush();
-        private double rotation = 0;
-
+        private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
+        private double rotation;
+        // Variables pour le DEBUG
+        private readonly int arrondi = 5;
+#if DEBUG
+        private DEBUG winDEBUG;
+#endif
+        // FIN DES VARIABLES
 
         public MainWindow()
         {
             InitializeComponent();
+#if DEBUG
+            // Instancier la fenêtre DEBUG
+            winDEBUG = new DEBUG();
+            winDEBUG.Show();
+#endif
             Canvas.SetLeft(Joueur, X);
-            MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory + "poisson1.png");
-            //textureJoueur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "poisson1.png"));
-            //Joueur.Fill = textureJoueur;
             Horloge.Tick += MoteurDeJeu;
             Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
             Horloge.Start();
@@ -68,8 +75,18 @@ namespace SAE101
         {
             DetecteAppui();
             PhysiqueJoueur();
-            BougeJoueur();
-            AfficheScore();
+            Affiche();
+#if DEBUG
+            // Afficher les variables d'environement
+            if (winDEBUG != null)
+            {
+                winDEBUG.Content =
+                    $" pY : {Math.Round(pY, arrondi)}\n" +
+                    $" vY : {Math.Round(vY, arrondi)}\n" +
+                    $" aY : {Math.Round(aY, arrondi)}\n" +
+                    $" r : {rotation}";
+            }
+#endif
         }
 
 
@@ -122,15 +139,13 @@ namespace SAE101
             pY += vY;
         }
 
-
-        private void BougeJoueur()
+        private void Affiche()
         {
+            // Joueur
             Canvas.SetBottom(Joueur, pY);
-        }
-
-
-        private void AfficheScore()
-        {
+            rotation = Math.Round( -90 * Math.Atanh(Math.Round(vY, 2) / ratioRotation), 1);
+            Joueur.RenderTransform = new RotateTransform(rotation);
+            // Score
             lbDistance.Content = $"Distance : {score}m";
             lbTemps.Content = $"Temps : {temps}s";
         }
@@ -157,6 +172,11 @@ namespace SAE101
                     toutBoutonEnfonce[i] = false;
                 }
             }
+        }
+
+        private void StopTout(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
