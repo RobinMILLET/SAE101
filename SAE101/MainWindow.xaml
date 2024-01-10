@@ -17,6 +17,7 @@
         Focusable="True"
         KeyDown="ClavierAppui"
         KeyUp="ClavierRelache">
+        <Rectangle Height="5" Canvas.Bottom="420" Width="1250" Fill="#7F46FDF0"/>
         <Label
             x:Name="lbDistance"
             Canvas.Left="10"

@@ -20,9 +20,9 @@ namespace SAE101
     {
         // Gestion boutons
         private bool boutonActif = false;
-        private bool[] toutBoutonEnfonce = new bool[5] {false, false, false, false, false };
+        private bool[] toutBoutonEnfonce = new bool[6] {false, false, false, false, false, false };
         // Personnalisable par l'utilisateur
-        private Key[] boutonsValides = new Key[5] { Key.Z, Key.W, Key.Up, Key.Space, Key.Enter };
+        private Key[] boutonsValides = new Key[6] { Key.Z, Key.W, Key.Up, Key.Down, Key.Space, Key.Enter };
         // Score et Temps
         private int score = 0;
         private int temps = 0;
@@ -36,22 +36,28 @@ namespace SAE101
         private double vY = 0;
         private double aY = 0;
         // Physique Principale
-        private int asymptote = 400;
-        private int borneStableP = 50;
+        private readonly int asymptote = 400;
+        private readonly int borneStableP = 15;
+        private readonly double frictionAir = 0.1;
+        private readonly double frictionEau = 0.15;
+        private readonly double frictionSplash = 0.5;
+        private readonly double frictionStable = 0.1;
+        private readonly double accelerationJoueur = 0.5;
+        private readonly double flotaison = 0.75;
+        private readonly double gravité = 0.3;
         private bool vaSplash = false;
-        private double frictionAir = 0.1;
-        private double frictionEau = 0.2;
-        private double frictionSplash = 0.4;
-        private double frictionStable = 0.3;
-        private double accelerationJoueur = 1;
-        private double flotaison = 1;
-        private double gravité = 0.25;
+        // Apparence
+        private ImageBrush textureJoueur = new ImageBrush();
+        private double rotation = 0;
 
 
         public MainWindow()
         {
             InitializeComponent();
             Canvas.SetLeft(Joueur, X);
+            MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory + "poisson1.png");
+            //textureJoueur.ImageSource = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "poisson1.png"));
+            //Joueur.Fill = textureJoueur;
             Horloge.Tick += MoteurDeJeu;
             Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
             Horloge.Start();
@@ -86,6 +92,8 @@ namespace SAE101
             if (boutonActif && pY <= asymptote) { aY -= accelerationJoueur; }
             // Relativité
             double friction;
+            bool dansBorne = false;
+            if (pY <= asymptote + borneStableP && pY >= asymptote - borneStableP) dansBorne = true;
             if (pY > asymptote) // Air
             {
                 friction = frictionAir;
@@ -94,7 +102,7 @@ namespace SAE101
             else // Eau
             {
                 friction = frictionEau;
-                if (!boutonActif) { aY += flotaison; }
+                if (!boutonActif && !dansBorne) { aY += flotaison; }
             }
             // Réentrée dans l'eau
             if (pY > asymptote) { vaSplash = true; }
@@ -103,7 +111,9 @@ namespace SAE101
                 vaSplash = false;
                 if (!boutonActif) { friction += frictionSplash; }
             }
-            if (vY <= 0 && pY <= asymptote+borneStableP && pY >= asymptote-borneStableP && !boutonActif) { friction += frictionStable; }
+            // Stabilisation
+            if (vY <= 0 && dansBorne && !boutonActif) { friction += frictionStable; }
+            if (friction < 0) friction = 0; // Pas de friction négative
             vY *= 1 - friction;
             aY *= 1 - friction;
             // Calcul de Vitesse
