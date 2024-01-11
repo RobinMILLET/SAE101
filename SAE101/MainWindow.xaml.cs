@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -37,20 +39,22 @@ namespace SAE101
         private double aY = 0;
         // Physique Principale
         private readonly int asymptote = 400;
-        private readonly int borneStableP = 15;
+        private readonly int borneStableP = 25;
         private readonly double frictionAir = 0.1;
         private readonly double frictionEau = 0.15;
-        private readonly double frictionSplash = 0.4;
-        private readonly double frictionStable = 0.15;
+        private readonly double frictionSplash = 0.2;
+        private readonly double frictionStable = 0.2;
         private readonly double accelerationJoueur = 0.5;
         private readonly double flotaison = 0.75;
         private readonly double gravité = 0.3;
         private bool vaSplash = false;
         // Apparence
+        private ImageBrush imgJoueur= new ImageBrush();
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
         // Variables pour le DEBUG
-        private readonly int arrondi = 5;
+        private readonly int arrondi = 4;
+        public string dir;
 #if DEBUG
         private DEBUG winDEBUG;
 #endif
@@ -60,12 +64,16 @@ namespace SAE101
 
         public MainWindow()
         {
+            dir = AppDomain.CurrentDomain.BaseDirectory;
+            dir = dir.Remove(dir.IndexOf("\\bin\\"));
             InitializeComponent();
 #if DEBUG
             // Instancier la fenêtre DEBUG
             winDEBUG = new DEBUG();
             winDEBUG.Show();
 #endif
+            imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "\\img\\poisson.png"));
+            Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
             Horloge.Tick += MoteurDeJeu;
             Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
@@ -83,6 +91,7 @@ namespace SAE101
             if (winDEBUG != null)
             {
                 winDEBUG.Content =
+                    $" dir = {dir}\n" +
                     $" pY : {Math.Round(pY, arrondi)}\n" +
                     $" vY : {Math.Round(vY, arrondi)}\n" +
                     $" aY : {Math.Round(aY, arrondi)}\n" +

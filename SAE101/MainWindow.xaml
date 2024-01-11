@@ -45,10 +45,9 @@
             x:Name="Joueur"
             Canvas.Left="250"
             Canvas.Bottom="400"
-            Width="50"
-            Height="25"
-            RenderTransformOrigin="0.5,0.5"
-            Stroke="Black">
+            Width="70"
+            Height="45"
+            RenderTransformOrigin="0.5,0.5">
             <Rectangle.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform />

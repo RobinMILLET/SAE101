@@ -15,41 +15,40 @@ namespace SAE101
         private double pY;
         private double vX;
         private double vY;
-        private int indexeGraphique;
+        private ImageBrush visuel;
         private int[][] collisions;
         private bool fixe;
 
         // Constructeurs
 
-        public Obstacle(double pX, double pY, double vX, double vY, int indexeGraphique, int[][] collisions, bool fixe)
+        public Obstacle(double pX, double pY, double vX, double vY, ImageBrush visuel, int[][] collisions, bool fixe)
         {
             this.PX = pX;
             this.PY = pY;
             this.VX = vX;
             this.VY = vY;
-            this.IndexeGraphique = indexeGraphique;
+            this.Visuel = visuel;
             this.Collisions = collisions;
             this.Fixe = fixe;
         }
 
-        public Obstacle(double pX, double pY, double vX, double vY, int indexeGraphique, int[][] collisions)
+        public Obstacle(double pX, double pY, double vX, double vY, ImageBrush visuel, int[][] collisions)
         {
             this.PX = pX;
             this.PY = pY;
             this.VX = vX;
             this.VY = vY;
-            this.IndexeGraphique = indexeGraphique;
+            this.Visuel = visuel;
             this.Collisions = collisions;
             this.Fixe = false;
         }
 
-        public Obstacle(double pX, double pY, double vX, double vY, int indexeGraphique, bool fixe)
+        public Obstacle(double pX, double pY, double vX, double vY, bool fixe)
         {
             this.PX = pX;
             this.PY = pY;
             this.VX = vX;
             this.VY = vY;
-            this.IndexeGraphique = indexeGraphique;
             this.Fixe = fixe;
         }
 
@@ -107,16 +106,16 @@ namespace SAE101
             }
         }
 
-        public int IndexeGraphique
+        public ImageBrush Visuel
         {
             get
             {
-                return indexeGraphique;
+                return visuel;
             }
 
             set
             {
-                indexeGraphique = value;
+                visuel = value;
             }
         }
 
@@ -181,7 +180,7 @@ namespace SAE101
         private Obstacle CollisionObstacle(int i)
         {
             int[] col = collisions[i];
-            Obstacle o = new Obstacle(pX + col[0], pX + col[1], vX, vY, 0, fixe);
+            Obstacle o = new Obstacle(pX + col[0], pX + col[1], vX, vY, fixe);
             return o;
         }
 
