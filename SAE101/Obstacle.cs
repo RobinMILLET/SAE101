@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -11,102 +13,51 @@ namespace SAE101
 {
     internal class Obstacle
     {
-        private double pX;
-        private double pY;
-        private double vX;
-        private double vY;
-        private ImageBrush visuel;
-        private int[][] collisions;
-        private bool fixe;
+        // Champs
+
+        private Rectangle visuel;
+        private Rect[] collisions;
+        private double dX;
+        private double dY;
+        private Rectangle[] visuelCollisions;
 
         // Constructeurs
 
-        public Obstacle(double pX, double pY, double vX, double vY, ImageBrush visuel, int[][] collisions, bool fixe)
+        public Obstacle(Rectangle visuel, Rect[] collisions, double dX, double dY)
         {
-            this.PX = pX;
-            this.PY = pY;
-            this.VX = vX;
-            this.VY = vY;
             this.Visuel = visuel;
             this.Collisions = collisions;
-            this.Fixe = fixe;
+            this.DX = dX;
+            this.DY = dY;
         }
 
-        public Obstacle(double pX, double pY, double vX, double vY, ImageBrush visuel, int[][] collisions)
+        public Obstacle(Rectangle visuel, Rect[] collisions, double dX)
         {
-            this.PX = pX;
-            this.PY = pY;
-            this.VX = vX;
-            this.VY = vY;
             this.Visuel = visuel;
             this.Collisions = collisions;
-            this.Fixe = false;
+            this.DX = dX;
+            this.DY = 0;
         }
 
-        public Obstacle(double pX, double pY, double vX, double vY, bool fixe)
+        public Obstacle(Rectangle visuel, Rect[] collisions)
         {
-            this.PX = pX;
-            this.PY = pY;
-            this.VX = vX;
-            this.VY = vY;
-            this.Fixe = fixe;
+            this.Visuel = visuel;
+            this.Collisions = collisions;
+            this.DX = 0;
+            this.DY = 0;
         }
 
-        // Champs
-
-        public double PX
+        public Obstacle(Rectangle visuel)
         {
-            get
-            {
-                return pX;
-            }
-
-            set
-            {
-                pX = value;
-            }
+            this.Visuel = visuel;
+            this.Collisions = new Rect[0];
+            this.DX = 0;
+            this.DY = 0;
         }
 
-        public double PY
-        {
-            get
-            {
-                return pY;
-            }
+        // Propriétés
 
-            set
-            {
-                pY = value;
-            }
-        }
-
-        public double VX
-        {
-            get
-            {
-                return vX;
-            }
-
-            set
-            {
-                vX = value;
-            }
-        }
-
-        public double VY
-        {
-            get
-            {
-                return vY;
-            }
-
-            set
-            {
-                vY = value;
-            }
-        }
-
-        public ImageBrush Visuel
+        public Rectangle Visuel
         {
             get
             {
@@ -119,7 +70,8 @@ namespace SAE101
             }
         }
 
-        public int[][] Collisions
+
+        public Rect[] Collisions
         {
             get
             {
@@ -128,81 +80,51 @@ namespace SAE101
 
             set
             {
-                if (collisions.GetLength(1) != 4) { throw new ArgumentException("Format des collisions : [x, y, dx, dy]"); }
                 collisions = value;
             }
         }
 
-        public bool Fixe
+
+        public double DX
         {
             get
             {
-                return fixe;
+                return dX;
             }
 
             set
             {
-                fixe = value;
+                dX = value;
+            }
+        }
+
+
+        public double DY
+        {
+            get
+            {
+                return this.dY;
+            }
+
+            set
+            {
+                this.dY = value;
             }
         }
 
         // Méthodes
 
-        private void Avance(double x)
+        private void Avance(int n)
         {
-            pX += x;
+            double x = Canvas.GetLeft(visuel);
+            Canvas.SetLeft(visuel, x + n);
             Avance();
         }
 
         private void Avance()
         {
-            if (vX != 0) pX += vX;
-        }
-
-        private void Approche(double joueurY)
-        {
-            if (vY != 0)
-            {
-                if (vY < joueurY - vY) { pY += vY; }
-                else if (vY > joueurY + vY) { pY -= vY; }
-            }
-        }
-
-        private void CollisionObstacle()
-        {
-            Obstacle[] o = new Obstacle[collisions.Length]; 
-            for (int i = 0; i < collisions.Length; i++)
-            {
-                    o[i] = CollisionObstacle(i);
-            }
-        }
-
-        private Obstacle CollisionObstacle(int i)
-        {
-            int[] col = collisions[i];
-            Obstacle o = new Obstacle(pX + col[0], pX + col[1], vX, vY, fixe);
-            return o;
-        }
-
-        private void CollisionRectangle()
-        {
-            Rectangle[] r = new Rectangle[collisions.Length];
-            for (int i = 0; i < collisions.Length; i++)
-            {
-                r[i] = CollisionRectangle(i);
-            }
-        }
-
-        private Rectangle CollisionRectangle(int i)
-        {
-            int[] col = collisions[i];
-            Rectangle r = new Rectangle();
-            Canvas.SetLeft(r, pX + col[0]);
-            Canvas.SetBottom(r, pY + col[1]);
-            r.Width = col[2];
-            r.Height = col[3];
-            r.Stroke = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            return r;
+            double x = Canvas.GetLeft(visuel);
+            Canvas.SetLeft(visuel, x + this.DX);
         }
     }
 }

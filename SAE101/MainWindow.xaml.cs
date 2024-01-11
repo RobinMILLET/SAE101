@@ -34,37 +34,33 @@ namespace SAE101
         private bool pause = true;
         // Positionnement, Vitesse et Accélération (X est constant)
         private readonly double X = 250;
-        private double pY = 400;
+        private double pY = 350;
         private double vY = 0;
         private double aY = 0;
         // Physique Principale
-        private readonly int asymptote = 400;
+        private readonly int asymptote = 350;
         private readonly int borneStableP = 25;
         private readonly double frictionAir = 0.1;
         private readonly double frictionEau = 0.15;
         private readonly double frictionSplash = 0.2;
         private readonly double frictionStable = 0.2;
-        private readonly double accelerationJoueur = 0.5;
+        private readonly double accelerationJoueur = 0.25;
         private readonly double flotaison = 0.75;
-        private readonly double gravité = 0.3;
+        private readonly double gravité = 0.25;
         private bool vaSplash = false;
-        // Vitesse fond
-        private int frequenceDecaleFond = 8; // vitesse du fond (1 : plus rapide)
-
-        // Images
-        // Joueur
-        private ImageBrush imgJoueur= new ImageBrush();
+        // Vitesse X et Parallax
+        private int tailleDecor = 2478;
+        private int vitesseFond = 1; // Fond
+        private int vitesseVague = 10; // Vague
+        private int vitesseSol = 7; // Sol
+        // Rotation Joueur
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
-        // Fond
-        private ImageBrush textureFond = new ImageBrush();
-        int tickDecaleFond = 0;
-        // Sol
-        private ImageBrush textureSol = new ImageBrush();
-        // Vague
-        private ImageBrush textureVague = new ImageBrush();
-
-
+        // Images
+        private ImageBrush imgJoueur = new ImageBrush(); // Joueur
+        private ImageBrush textureFond = new ImageBrush(); // Fond
+        private ImageBrush textureSol = new ImageBrush(); // Sol
+        private ImageBrush textureVague = new ImageBrush(); // Vague
         // Variables pour le DEBUG
         private readonly int arrondi = 4;
         public string dir;
@@ -85,39 +81,36 @@ namespace SAE101
             winDEBUG = new DEBUG();
             winDEBUG.Show();
 #endif
-            imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "\\img\\poisson.png"));
+            
+            imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
 
-            Horloge.Tick += MoteurDeJeu;
-            Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
-            Horloge.Start();
-
+            // Génération du décor 
+            // Fond
             textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
             fond1.Background = textureFond;
             fond2.Background = textureFond;
 
+            // Sol
             textureSol.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/sol.png"));
             sol1.Fill = textureSol;
             sol2.Fill = textureSol;
 
+            // Vague
             textureVague.ImageSource = new BitmapImage(new Uri(dir + "/img/vague.png"));
             vague1.Fill = textureVague;
             vague2.Fill = textureVague;
+
+            // Moteur
+            Horloge.Tick += MoteurDeJeu;
+            Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
+            Horloge.Start();
         }
 
 
         private void MoteurDeJeu(object objet, EventArgs e)
         {
-            tickDecaleFond += 1;
-            if (tickDecaleFond >= frequenceDecaleFond)
-            {
-                tickDecaleFond = 0;
-                BougerFond();
-            }
-            BougerSol();
-            BougerVague();
-
             DetecteAppui();
             PhysiqueJoueur();
             Affiche();
@@ -194,6 +187,10 @@ namespace SAE101
             // Score
             lbDistance.Content = $"Distance : {score}m";
             lbTemps.Content = $"Temps : {temps}s";
+            // Decor
+            BougerFond();
+            BougerSol();
+            BougerVague();
         }
 
 
@@ -220,40 +217,43 @@ namespace SAE101
             }
         }
 
+
         private void StopTout(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
         }
 
 
-
         private void BougerFond()
         {
-            // si le fond dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(fond1) <= -2480) Canvas.SetLeft(fond1, 2480);
-            else if (Canvas.GetLeft(fond2) <= -2480) Canvas.SetLeft(fond2, 2480);
-            // déplacer de 10px le fond vers la gauche
-            Canvas.SetLeft(fond1, Canvas.GetLeft(fond1) - 10);
-            Canvas.SetLeft(fond2, Canvas.GetLeft(fond2) - 10);
+            // Si le fond dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(fond1) <= -tailleDecor) Canvas.SetLeft(fond1, tailleDecor);
+            else if (Canvas.GetLeft(fond2) <= -tailleDecor) Canvas.SetLeft(fond2, tailleDecor);
+            // Déplacer le fond vers la gauche
+            Canvas.SetLeft(fond1, Canvas.GetLeft(fond1) - vitesseFond);
+            Canvas.SetLeft(fond2, Canvas.GetLeft(fond2) - vitesseFond);
         }
+
 
         private void BougerSol()
         {
-            // si le sol dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(sol1) <= -2480) Canvas.SetLeft(sol1, 2480);
-            else if (Canvas.GetLeft(sol2) <= -2480) Canvas.SetLeft(sol2, 2480);
-            // déplacer de 10px le sol vers la gauche
-            Canvas.SetLeft(sol1, Canvas.GetLeft(sol1) - 10);
-            Canvas.SetLeft(sol2, Canvas.GetLeft(sol2) - 10);
+            // Si le sol dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(sol1) <= -tailleDecor) Canvas.SetLeft(sol1, tailleDecor);
+            else if (Canvas.GetLeft(sol2) <= -tailleDecor) Canvas.SetLeft(sol2, tailleDecor);
+            // Déplacer le sol vers la gauche
+            Canvas.SetLeft(sol1, Canvas.GetLeft(sol1) - vitesseSol);
+            Canvas.SetLeft(sol2, Canvas.GetLeft(sol2) - vitesseSol);
         }
+
+
         private void BougerVague()
         {
-            // si le sol dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(vague1) <= -2480) Canvas.SetLeft(vague1, 2480);
-            else if (Canvas.GetLeft(vague2) <= -2480) Canvas.SetLeft(vague2, 2480);
-            // déplacer de 10px le sol vers la gauche
-            Canvas.SetLeft(vague1, Canvas.GetLeft(vague1) - 10);
-            Canvas.SetLeft(vague2, Canvas.GetLeft(vague2) - 10);
+            // Si le sol dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(vague1) <= -tailleDecor) Canvas.SetLeft(vague1, tailleDecor);
+            else if (Canvas.GetLeft(vague2) <= -tailleDecor) Canvas.SetLeft(vague2, tailleDecor);
+            // Déplacer le sol vers la gauche
+            Canvas.SetLeft(vague1, Canvas.GetLeft(vague1) - vitesseVague);
+            Canvas.SetLeft(vague2, Canvas.GetLeft(vague2) - vitesseVague);
         }
     }
 }
