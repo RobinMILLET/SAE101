@@ -114,17 +114,23 @@ namespace SAE101
 
         // Méthodes
 
-        private void Avance(int n)
+        private void Mouvement(double x, double y)
         {
-            double x = Canvas.GetLeft(visuel);
-            Canvas.SetLeft(visuel, x + n);
-            Avance();
-        }
-
-        private void Avance()
-        {
-            double x = Canvas.GetLeft(visuel);
-            Canvas.SetLeft(visuel, x + this.DX);
+            double posX = Canvas.GetLeft(visuel);
+            double posY = Canvas.GetBottom(visuel);
+            Canvas.SetLeft(visuel, posX + x + this.DX);
+            Canvas.SetBottom(visuel, posY + y + this.DY);
+            foreach (Rect r in this.Collisions)
+            {
+                r.Offset(x + this.DX, y + this.DY);
+            }
+            foreach (Rectangle r in this.visuelCollisions)
+            {
+                posX = Canvas.GetLeft(visuel);
+                posY = Canvas.GetBottom(visuel);
+                Canvas.SetLeft(r, posX + x + this.DX);
+                Canvas.SetBottom(r, posY + y + this.DY);
+            }
         }
     }
 }

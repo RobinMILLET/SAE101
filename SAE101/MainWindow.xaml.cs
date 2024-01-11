@@ -49,7 +49,7 @@ namespace SAE101
         private readonly double gravité = 0.25;
         private bool vaSplash = false;
         // Vitesse X et Parallax
-        private int tailleDecor = 2478;
+        private int tailleDecor = 2480;
         private int vitesseFond = 1; // Fond
         private int vitesseVague = 10; // Vague
         private int vitesseSol = 7; // Sol
