@@ -52,6 +52,8 @@ namespace SAE101
         private ImageBrush imgJoueur= new ImageBrush();
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
+        // Fond
+        private ImageBrush textureFond = new ImageBrush();
         // Variables pour le DEBUG
         private readonly int arrondi = 4;
         public string dir;
@@ -75,9 +77,14 @@ namespace SAE101
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "\\img\\poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
+
             Horloge.Tick += MoteurDeJeu;
             Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
             Horloge.Start();
+
+            textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
+            fond1.Background = textureFond;
+            fond2.Background = textureFond;
         }
 
 

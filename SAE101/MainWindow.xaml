@@ -18,6 +18,19 @@
         Focusable="True"
         KeyDown="ClavierAppui"
         KeyUp="ClavierRelache">
+        <Canvas
+            x:Name="fond1"
+            Width="2480"
+            Height="750"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center" />
+        <Canvas
+            x:Name="fond2"
+            Canvas.Left="2480"
+            Width="2480"
+            Height="750"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center" />
         <Rectangle
             Canvas.Bottom="420"
             Width="1250"
