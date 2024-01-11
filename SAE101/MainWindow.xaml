@@ -20,6 +20,7 @@
         KeyUp="ClavierRelache">
         <Canvas
             x:Name="fond1"
+            Canvas.Left="0"
             Width="2480"
             Height="750"
             HorizontalAlignment="Left"
@@ -30,7 +31,7 @@
             Width="2480"
             Height="750"
             HorizontalAlignment="Left"
-            VerticalAlignment="Center" />
+            VerticalAlignment="Top" />
         <Rectangle
             Canvas.Bottom="420"
             Width="1250"
@@ -55,6 +56,22 @@
             FontSize="36"
             FontWeight="Bold" />
         <Rectangle
+            x:Name="sol1"
+            Canvas.Left="0"
+            Canvas.Bottom="0"
+            Width="2480"
+            Height="100"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top" />
+        <Rectangle
+            x:Name="sol2"
+            Canvas.Left="2480"
+            Canvas.Bottom="0"
+            Width="2480"
+            Height="100"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top" />
+        <Rectangle
             x:Name="Joueur"
             Canvas.Left="250"
             Canvas.Bottom="400"
@@ -70,5 +87,17 @@
                 </TransformGroup>
             </Rectangle.RenderTransform>
         </Rectangle>
+        <Rectangle
+            x:Name="vague1"
+            Canvas.Left="0"
+            Canvas.Bottom="381"
+            Width="2480"
+            Height="30" />
+        <Rectangle
+            x:Name="vague2"
+            Canvas.Left="2480"
+            Canvas.Bottom="381"
+            Width="2480"
+            Height="30" />
     </Canvas>
 </Window>

@@ -48,12 +48,23 @@ namespace SAE101
         private readonly double flotaison = 0.75;
         private readonly double gravité = 0.3;
         private bool vaSplash = false;
-        // Apparence
+        // Vitesse fond
+        private int frequenceDecaleFond = 8; // vitesse du fond (1 : plus rapide)
+
+        // Images
+        // Joueur
         private ImageBrush imgJoueur= new ImageBrush();
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
         // Fond
         private ImageBrush textureFond = new ImageBrush();
+        int tickDecaleFond = 0;
+        // Sol
+        private ImageBrush textureSol = new ImageBrush();
+        // Vague
+        private ImageBrush textureVague = new ImageBrush();
+
+
         // Variables pour le DEBUG
         private readonly int arrondi = 4;
         public string dir;
@@ -85,11 +96,28 @@ namespace SAE101
             textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
             fond1.Background = textureFond;
             fond2.Background = textureFond;
+
+            textureSol.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/sol.png"));
+            sol1.Fill = textureSol;
+            sol2.Fill = textureSol;
+
+            textureVague.ImageSource = new BitmapImage(new Uri(dir + "/img/vague.png"));
+            vague1.Fill = textureVague;
+            vague2.Fill = textureVague;
         }
 
 
         private void MoteurDeJeu(object objet, EventArgs e)
         {
+            tickDecaleFond += 1;
+            if (tickDecaleFond >= frequenceDecaleFond)
+            {
+                tickDecaleFond = 0;
+                BougerFond();
+            }
+            BougerSol();
+            BougerVague();
+
             DetecteAppui();
             PhysiqueJoueur();
             Affiche();
@@ -195,6 +223,37 @@ namespace SAE101
         private void StopTout(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+
+
+        private void BougerFond()
+        {
+            // si le fond dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(fond1) <= -2480) Canvas.SetLeft(fond1, 2480);
+            else if (Canvas.GetLeft(fond2) <= -2480) Canvas.SetLeft(fond2, 2480);
+            // déplacer de 10px le fond vers la gauche
+            Canvas.SetLeft(fond1, Canvas.GetLeft(fond1) - 10);
+            Canvas.SetLeft(fond2, Canvas.GetLeft(fond2) - 10);
+        }
+
+        private void BougerSol()
+        {
+            // si le sol dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(sol1) <= -2480) Canvas.SetLeft(sol1, 2480);
+            else if (Canvas.GetLeft(sol2) <= -2480) Canvas.SetLeft(sol2, 2480);
+            // déplacer de 10px le sol vers la gauche
+            Canvas.SetLeft(sol1, Canvas.GetLeft(sol1) - 10);
+            Canvas.SetLeft(sol2, Canvas.GetLeft(sol2) - 10);
+        }
+        private void BougerVague()
+        {
+            // si le sol dépasse la limite, on le renvoie tout à droite
+            if (Canvas.GetLeft(vague1) <= -2480) Canvas.SetLeft(vague1, 2480);
+            else if (Canvas.GetLeft(vague2) <= -2480) Canvas.SetLeft(vague2, 2480);
+            // déplacer de 10px le sol vers la gauche
+            Canvas.SetLeft(vague1, Canvas.GetLeft(vague1) - 10);
+            Canvas.SetLeft(vague2, Canvas.GetLeft(vague2) - 10);
         }
     }
 }
