@@ -54,6 +54,8 @@ namespace SAE101
 #if DEBUG
         private DEBUG winDEBUG;
 #endif
+        // Obstacles
+        private  List<Obstacle> obstacles;
         // FIN DES VARIABLES
 
         public MainWindow()
