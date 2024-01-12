@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -23,20 +25,26 @@ namespace SAE101
         // Gestion boutons
         private bool boutonActif = false;
         private bool[] toutBoutonEnfonce = new bool[6] {false, false, false, false, false, false };
+        
         // Personnalisable par l'utilisateur
         private Key[] boutonsValides = new Key[6] { Key.Z, Key.W, Key.Up, Key.Down, Key.Space, Key.Enter };
+        
         // Score et Temps
         private int score = 0;
         private int temps = 0;
+        
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
-        private int deltaIPS = 16;
-        private bool pause = true;
+        private readonly int deltaMoteur = 16;
+        private int tickParImage = 1; // 1 = 60FPS, 2 = 30FPS, 3 = 20FPS ...
+        private int tick = 0;
+        
         // Positionnement, Vitesse et Accélération (X est constant)
         private readonly double X = 250;
         private double pY = 350;
         private double vY = 0;
         private double aY = 0;
+       
         // Physique Principale
         private readonly int asymptote = 350;
         private readonly int borneStableP = 25;
@@ -48,27 +56,36 @@ namespace SAE101
         private readonly double flotaison = 0.75;
         private readonly double gravité = 0.25;
         private bool vaSplash = false;
+        
         // Vitesse X et Parallax
         private int tailleDecor = 2480;
-        private int vitesseFond = 1; // Fond
-        private int vitesseVague = 10; // Vague
-        private int vitesseSol = 7; // Sol
+        private double vitesse = 7.5;
+        private double vFond = 0.1; // Fond
+        private double vSol = 1; // Sol
+        private double vVague = 1.25; // Vague
+        private (UIElement, double)[] elements;
+        
         // Rotation Joueur
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
+        
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
         private ImageBrush textureFond = new ImageBrush(); // Fond
         private ImageBrush textureSol = new ImageBrush(); // Sol
         private ImageBrush textureVague = new ImageBrush(); // Vague
+        
         // Variables pour le DEBUG
         private readonly int arrondi = 4;
         public string dir;
 #if DEBUG
         private DEBUG winDEBUG;
+        private Stopwatch chrono = new Stopwatch();
 #endif
+        
         // Obstacles
         private  List<Obstacle> obstacles;
+
         // FIN DES VARIABLES
 
         public MainWindow()
@@ -81,12 +98,20 @@ namespace SAE101
             winDEBUG = new DEBUG();
             winDEBUG.Show();
 #endif
-            
+
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
 
             // Génération du décor 
+            elements = new (UIElement, double)[]
+            {
+                // ("nom_de_l'objet", vitesse_multiplicatrice)
+                (fond1, vFond), (fond2, vFond),
+                (sol1, vSol), (sol2, vSol),
+                (vague1, vVague), (vague2, vVague)
+            };
+            
             // Fond
             textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
             fond1.Background = textureFond;
@@ -104,28 +129,40 @@ namespace SAE101
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
-            Horloge.Interval = TimeSpan.FromMilliseconds(deltaIPS);
+            Horloge.Interval = TimeSpan.FromMilliseconds(deltaMoteur);
             Horloge.Start();
         }
 
 
         private void MoteurDeJeu(object objet, EventArgs e)
         {
+#if DEBUG
+            chrono.Restart();
+#endif
             DetecteAppui();
             PhysiqueJoueur();
-            Affiche();
-#if DEBUG
-            // Afficher les variables d'environement
-            if (winDEBUG != null)
+            tick++;
+            if (tick >= tickParImage) tick = 0;
+            if (tick == 0)
             {
-                winDEBUG.Content =
-                    $" dir = {dir}\n" +
-                    $" pY : {Math.Round(pY, arrondi)}\n" +
-                    $" vY : {Math.Round(vY, arrondi)}\n" +
-                    $" aY : {Math.Round(aY, arrondi)}\n" +
-                    $" r : {rotation}";
-            }
+                BougerDecor();
+                Affiche();
+#if DEBUG
+                // Afficher les variables d'environement
+                if (winDEBUG != null)
+                {
+                    winDEBUG.Content =
+                        $" dir = {dir}\n" +
+                        $" Vitesse = {vitesse} px/t\n" +
+                        $" pos Y Joueur : {Math.Round(pY, arrondi).ToString($"F{arrondi}")} px\n" +
+                        $" vit Y Joueur : {Math.Round(vY, arrondi).ToString($"F{arrondi}")} px/t\n" +
+                        $" acc Y Joueur : {Math.Round(aY, arrondi).ToString($"F{arrondi}")} px/t²\n" +
+                        $" rotat Joueur : {rotation} deg\n" +
+                        $" tempsExecMoteur : {Math.Round(chrono.Elapsed.TotalMilliseconds, arrondi).ToString($"F{arrondi}")} ms"
+                        ;
+                }
 #endif
+            }
         }
 
 
@@ -178,6 +215,7 @@ namespace SAE101
             pY += vY;
         }
 
+
         private void Affiche()
         {
             // Joueur
@@ -187,10 +225,6 @@ namespace SAE101
             // Score
             lbDistance.Content = $"Distance : {score}m";
             lbTemps.Content = $"Temps : {temps}s";
-            // Decor
-            BougerFond();
-            BougerSol();
-            BougerVague();
         }
 
 
@@ -224,36 +258,21 @@ namespace SAE101
         }
 
 
-        private void BougerFond()
+        private void BougerDecor()
         {
-            // Si le fond dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(fond1) <= -tailleDecor) Canvas.SetLeft(fond1, tailleDecor);
-            else if (Canvas.GetLeft(fond2) <= -tailleDecor) Canvas.SetLeft(fond2, tailleDecor);
-            // Déplacer le fond vers la gauche
-            Canvas.SetLeft(fond1, Canvas.GetLeft(fond1) - vitesseFond);
-            Canvas.SetLeft(fond2, Canvas.GetLeft(fond2) - vitesseFond);
+            foreach (var doublon in elements)
+            {
+                BougerDecor(doublon.Item1, doublon.Item2);
+            }
         }
 
 
-        private void BougerSol()
+        private void BougerDecor(UIElement objet, double vit)
         {
-            // Si le sol dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(sol1) <= -tailleDecor) Canvas.SetLeft(sol1, tailleDecor);
-            else if (Canvas.GetLeft(sol2) <= -tailleDecor) Canvas.SetLeft(sol2, tailleDecor);
-            // Déplacer le sol vers la gauche
-            Canvas.SetLeft(sol1, Canvas.GetLeft(sol1) - vitesseSol);
-            Canvas.SetLeft(sol2, Canvas.GetLeft(sol2) - vitesseSol);
-        }
-
-
-        private void BougerVague()
-        {
-            // Si le sol dépasse la limite, on le renvoie tout à droite
-            if (Canvas.GetLeft(vague1) <= -tailleDecor) Canvas.SetLeft(vague1, tailleDecor);
-            else if (Canvas.GetLeft(vague2) <= -tailleDecor) Canvas.SetLeft(vague2, tailleDecor);
-            // Déplacer le sol vers la gauche
-            Canvas.SetLeft(vague1, Canvas.GetLeft(vague1) - vitesseVague);
-            Canvas.SetLeft(vague2, Canvas.GetLeft(vague2) - vitesseVague);
+            double posX = Canvas.GetLeft(objet);
+            posX -= vitesse * vit * tickParImage;
+            if (posX < -tailleDecor) posX += 2 * tailleDecor;
+            Canvas.SetLeft(objet, posX);
         }
     }
 }
