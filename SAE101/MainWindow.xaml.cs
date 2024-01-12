@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace SAE101
         
         // Score et Temps
         private int score = 0;
-        private int temps = 0;
+        private double temps = 0;
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -47,19 +48,20 @@ namespace SAE101
        
         // Physique Principale
         private readonly int asymptote = 350;
-        private readonly int borneStableP = 25;
+        private readonly int borneStableP = 30;
         private readonly double frictionAir = 0.1;
         private readonly double frictionEau = 0.15;
-        private readonly double frictionSplash = 0.2;
-        private readonly double frictionStable = 0.2;
+        private readonly double frictionSplash = 0.1;
+        private readonly double frictionStable = 0.15;
         private readonly double accelerationJoueur = 0.25;
-        private readonly double flotaison = 0.75;
-        private readonly double gravité = 0.25;
+        private readonly double flotaison = 0.80;
+        private readonly double graviteA = 0.2;
+        private readonly double graviteV = 0.15;
         private bool vaSplash = false;
         
         // Vitesse X et Parallax
         private int tailleDecor = 2480;
-        private double vitesse = 7.5;
+        private double vitesse = 10;
         private double vFond = 0.1; // Fond
         private double vSol = 1; // Sol
         private double vVague = 1.25; // Vague
@@ -76,15 +78,17 @@ namespace SAE101
         private ImageBrush textureVague = new ImageBrush(); // Vague
         
         // Variables pour le DEBUG
-        private readonly int arrondi = 4;
-        public string dir;
+        private string dir;
 #if DEBUG
+        private readonly int arrondi = 4;
+        private bool afficheCollisions = false;
         private DEBUG winDEBUG;
-        private Stopwatch chrono = new Stopwatch();
+        private Stopwatch chronoDEBUG = new Stopwatch();
 #endif
         
         // Obstacles
-        private  List<Obstacle> obstacles;
+        private List<Obstacle> obstacles = new List<Obstacle> { };
+        Obstacle barque;
 
         // FIN DES VARIABLES
 
@@ -98,7 +102,7 @@ namespace SAE101
             winDEBUG = new DEBUG();
             winDEBUG.Show();
 #endif
-
+            // Apparence du Joueur
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
@@ -114,18 +118,19 @@ namespace SAE101
             
             // Fond
             textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
-            fond1.Background = textureFond;
-            fond2.Background = textureFond;
+            fond1.Background = textureFond; fond2.Background = textureFond;
 
             // Sol
             textureSol.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/sol.png"));
-            sol1.Fill = textureSol;
-            sol2.Fill = textureSol;
+            sol1.Fill = textureSol; sol2.Fill = textureSol;
 
             // Vague
             textureVague.ImageSource = new BitmapImage(new Uri(dir + "/img/vague.png"));
-            vague1.Fill = textureVague;
-            vague2.Fill = textureVague;
+            vague1.Fill = textureVague; vague2.Fill = textureVague;
+
+            // Obstacles par défaut
+            barque = ObstacleUsine("/img/monde1/obstacles/barque.png", 0.75,
+                new Rect[] { new Rect(10, 35, 175, 50) }, -1, 0);
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -137,10 +142,15 @@ namespace SAE101
         private void MoteurDeJeu(object objet, EventArgs e)
         {
 #if DEBUG
-            chrono.Restart();
+            chronoDEBUG.Restart();
 #endif
             DetecteAppui();
             PhysiqueJoueur();
+            foreach (Obstacle obst in obstacles)
+            {
+                obst.Mouvement(-vitesse);
+            }
+
             tick++;
             if (tick >= tickParImage) tick = 0;
             if (tick == 0)
@@ -148,17 +158,32 @@ namespace SAE101
                 BougerDecor();
                 Affiche();
 #if DEBUG
+                // Afficher les collisions
+                if (winDEBUG.Col.IsChecked != afficheCollisions)
+                {
+                    if (afficheCollisions)
+                    {
+                        afficheCollisions = false;
+                        obstacles.ForEach(obstacle => obstacle.CacheCollisions(Canvas));
+                    }
+                    else
+                    {
+                        afficheCollisions = true;
+                        obstacles.ForEach(obstacle => obstacle.AfficheCollisions(Canvas));
+                    }
+                }
+
                 // Afficher les variables d'environement
                 if (winDEBUG != null)
                 {
-                    winDEBUG.Content =
-                        $" dir = {dir}\n" +
-                        $" Vitesse = {vitesse} px/t\n" +
-                        $" pos Y Joueur : {Math.Round(pY, arrondi).ToString($"F{arrondi}")} px\n" +
-                        $" vit Y Joueur : {Math.Round(vY, arrondi).ToString($"F{arrondi}")} px/t\n" +
-                        $" acc Y Joueur : {Math.Round(aY, arrondi).ToString($"F{arrondi}")} px/t²\n" +
-                        $" rotat Joueur : {rotation} deg\n" +
-                        $" tempsExecMoteur : {Math.Round(chrono.Elapsed.TotalMilliseconds, arrondi).ToString($"F{arrondi}")} ms"
+                    winDEBUG.Text.Content =
+                        $"dir = {dir}\n" +
+                        $"Vitesse = {vitesse.ToString($"F3")} px/t\n" +
+                        $"pos Y Joueur : {Math.Round(pY, arrondi).ToString($"F{arrondi}")} px\n" +
+                        $"vit Y Joueur : {Math.Round(vY, arrondi).ToString($"F{arrondi}")} px/t\n" +
+                        $"acc Y Joueur : {Math.Round(aY, arrondi).ToString($"F{arrondi}")} px/t²\n" +
+                        $"rotat Joueur : {rotation} deg\n" +
+                        $"tempsExecMoteur : {Math.Round(chronoDEBUG.Elapsed.TotalMilliseconds, arrondi).ToString($"F{arrondi}")} ms\n"
                         ;
                 }
 #endif
@@ -190,7 +215,8 @@ namespace SAE101
             if (pY > asymptote) // Air
             {
                 friction = frictionAir;
-                aY -= gravité;
+                aY -= graviteA;
+                vY -= graviteV;
             }
             else // Eau
             {
@@ -225,6 +251,11 @@ namespace SAE101
             // Score
             lbDistance.Content = $"Distance : {score}m";
             lbTemps.Content = $"Temps : {temps}s";
+            // Obstacle
+            foreach (Obstacle obst in obstacles)
+            {
+                obst.AfficheObstacle();
+            }
         }
 
 
@@ -237,6 +268,10 @@ namespace SAE101
                     toutBoutonEnfonce[i] = true;
                 }
             }
+#if DEBUG
+            // Commandes
+            if (e.Key == Key.NumPad1) GenereObstacle(barque, 1500, 355);
+#endif
         }
 
 
@@ -273,6 +308,37 @@ namespace SAE101
             posX -= vitesse * vit * tickParImage;
             if (posX < -tailleDecor) posX += 2 * tailleDecor;
             Canvas.SetLeft(objet, posX);
+        }
+
+
+        private Obstacle ObstacleUsine(string source, double ratioTaille, Rect[] collisions, double dx, double dy)
+        {
+            ImageBrush img = new ImageBrush(new BitmapImage(new Uri(dir + source)));
+            Rectangle visuel = new Rectangle();
+            visuel.Width = img.ImageSource.Width * ratioTaille;
+            visuel.Height = img.ImageSource.Height * ratioTaille;
+            visuel.Fill = img;
+            Canvas.SetZIndex(visuel, 6);
+            return new Obstacle(visuel, collisions, dx, dy);
+        }
+
+
+        private void GenereObstacle(Obstacle usine, double x, double y)
+        {
+            Obstacle obst = usine.GenereObstacle(x, y);
+            Rectangle r1 = obst.Visuel;
+            Rectangle r2 = new Rectangle() { Width = r1.Width, Height = r1.Height, Fill = r1.Fill };
+            obst.Visuel = r2;
+            Canvas.Children.Add(r2);
+            obst.PlaceCollisions();
+            obst.AfficheObstacle();
+#if DEBUG
+            if (afficheCollisions)
+            {
+                obst.AfficheCollisions(Canvas);
+            }
+#endif
+            obstacles.Add(obst);
         }
     }
 }
