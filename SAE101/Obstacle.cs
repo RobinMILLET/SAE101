@@ -26,19 +26,12 @@ namespace SAE101
 
         // Constructeurs
 
-        public Obstacle(Rectangle visuel, Rect[] collisions, double dX, double dY)
+        public Obstacle(Rectangle visuel, Rect[] collisions, double dX = 0, double dY = 0)
         {
             this.Visuel = visuel;
             this.Collisions = collisions;
             this.DX = dX;
             this.DY = dY;
-        }
-
-        public Obstacle(Rectangle visuel, Rect[] collisions, double dX)
-        {
-            this.Visuel = visuel;
-            this.Collisions = collisions;
-            this.DX = dX;
         }
 
         // Propriétés
@@ -223,7 +216,7 @@ namespace SAE101
 
         public bool EstEnCollision(Rect rect)
         {
-            return collisions.Any(x => x.Contains(rect));
+            return collisions.Any(x => x.IntersectsWith(rect));
         }
 
         public bool EstEnCollision(double  X, double Y)
@@ -234,6 +227,19 @@ namespace SAE101
         public bool EstEnCollision(Point point)
         {
             return collisions.Any(x => x.Contains(point));
+        }
+
+
+        public bool Sorti(Canvas canvas, int limite = 0)
+        {
+            if (PX < canvas.Margin.Left + limite - visuel.Width)
+            {
+#if DEBUG
+                this.CacheCollisions(canvas);
+#endif
+                return true;
+            }
+            return false;
         }
     }
 }

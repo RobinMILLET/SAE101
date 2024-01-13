@@ -42,16 +42,16 @@ namespace SAE101
         
         // Positionnement, Vitesse et Accélération (X est constant)
         private readonly double X = 250;
-        private double pY = 350;
+        private double pY = 355;
         private double vY = 0;
         private double aY = 0;
        
         // Physique Principale
-        private readonly int asymptote = 350;
-        private readonly int borneStableP = 30;
+        private readonly int asymptote = 355;
+        private readonly int borneStableP = 20;
         private readonly double frictionAir = 0.1;
         private readonly double frictionEau = 0.15;
-        private readonly double frictionSplash = 0.1;
+        private readonly double frictionSplash = 0.2;
         private readonly double frictionStable = 0.15;
         private readonly double accelerationJoueur = 0.25;
         private readonly double flotaison = 0.80;
@@ -67,9 +67,13 @@ namespace SAE101
         private double vVague = 1.25; // Vague
         private (UIElement, double)[] elements;
         
-        // Rotation Joueur
+        // Joueur
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
+        private Rect collision = new Rect() { Width = 35, Height = 35 };
+        private double decaleX = 15;
+        private double decaleY = 0;
+        private bool estEnCollision = false;
         
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
@@ -80,15 +84,19 @@ namespace SAE101
         // Variables pour le DEBUG
         private string dir;
 #if DEBUG
+        private Rectangle joueurDebug;
         private readonly int arrondi = 4;
         private bool afficheCollisions = false;
         private DEBUG winDEBUG;
         private Stopwatch chronoDEBUG = new Stopwatch();
+        private readonly int tailleMoyenneExec = 500;
+        private List<double> moyenneExec = new List<double> { };
 #endif
         
         // Obstacles
         private List<Obstacle> obstacles = new List<Obstacle> { };
         Obstacle barque;
+        private int limiteGauche = -500;
 
         // FIN DES VARIABLES
 
@@ -98,6 +106,8 @@ namespace SAE101
             dir = dir.Remove(dir.IndexOf("\\bin\\"));
             InitializeComponent();
 #if DEBUG
+            joueurDebug = new Rectangle() { Width = collision.Width, Height = collision.Height,
+                Stroke = new SolidColorBrush(Colors.Red)};
             // Instancier la fenêtre DEBUG
             winDEBUG = new DEBUG();
             winDEBUG.Show();
@@ -129,8 +139,10 @@ namespace SAE101
             vague1.Fill = textureVague; vague2.Fill = textureVague;
 
             // Obstacles par défaut
-            barque = ObstacleUsine("/img/monde1/obstacles/barque.png", 0.75,
-                new Rect[] { new Rect(10, 35, 175, 50) }, -1, 0);
+            barque = ObstacleUsine("/img/monde1/obstacles/barque.png", 0.85,
+                new Rect[] { new Rect(10, 35, 210, 65),
+                    new Rect(100, 0, 65, 50)},
+                -1, 0);
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -145,49 +157,27 @@ namespace SAE101
             chronoDEBUG.Restart();
 #endif
             DetecteAppui();
+            GereObstacles();
             PhysiqueJoueur();
-            foreach (Obstacle obst in obstacles)
-            {
-                obst.Mouvement(-vitesse);
-            }
+            Collision();
 
-            tick++;
-            if (tick >= tickParImage) tick = 0;
-            if (tick == 0)
+            if (tick >= tickParImage)
             {
+                tick = 0;
                 BougerDecor();
                 Affiche();
 #if DEBUG
-                // Afficher les collisions
-                if (winDEBUG.Col.IsChecked != afficheCollisions)
-                {
-                    if (afficheCollisions)
-                    {
-                        afficheCollisions = false;
-                        obstacles.ForEach(obstacle => obstacle.CacheCollisions(Canvas));
-                    }
-                    else
-                    {
-                        afficheCollisions = true;
-                        obstacles.ForEach(obstacle => obstacle.AfficheCollisions(Canvas));
-                    }
-                }
-
-                // Afficher les variables d'environement
-                if (winDEBUG != null)
-                {
-                    winDEBUG.Text.Content =
-                        $"dir = {dir}\n" +
-                        $"Vitesse = {vitesse.ToString($"F3")} px/t\n" +
-                        $"pos Y Joueur : {Math.Round(pY, arrondi).ToString($"F{arrondi}")} px\n" +
-                        $"vit Y Joueur : {Math.Round(vY, arrondi).ToString($"F{arrondi}")} px/t\n" +
-                        $"acc Y Joueur : {Math.Round(aY, arrondi).ToString($"F{arrondi}")} px/t²\n" +
-                        $"rotat Joueur : {rotation} deg\n" +
-                        $"tempsExecMoteur : {Math.Round(chronoDEBUG.Elapsed.TotalMilliseconds, arrondi).ToString($"F{arrondi}")} ms\n"
-                        ;
-                }
+                CollisionsDebug();
+                AfficheDebug();
 #endif
             }
+
+#if DEBUG
+            // Mesure d'execution
+            moyenneExec.Add(chronoDEBUG.Elapsed.TotalMilliseconds);
+            if (moyenneExec.Count > tailleMoyenneExec) moyenneExec.RemoveAt(0);
+#endif
+            tick++;
         }
 
 
@@ -200,6 +190,22 @@ namespace SAE101
             else
             {
                 boutonActif = false;
+            }
+        }
+
+
+        private void GereObstacles()
+        {
+            int nObstacle = 0;
+            while (nObstacle < obstacles.Count)
+            {
+                obstacles[nObstacle].Mouvement(-vitesse);
+                if (obstacles[nObstacle].Sorti(Canvas, limiteGauche))
+                {
+                    Canvas.Children.Remove(obstacles[nObstacle].Visuel);
+                    obstacles.RemoveAt(nObstacle);
+                }
+                else nObstacle++;
             }
         }
 
@@ -242,6 +248,14 @@ namespace SAE101
         }
 
 
+        private void Collision()
+        {
+            collision.X = X + decaleX;
+            collision.Y = pY + decaleY;
+            estEnCollision = obstacles.Any(obst => obst.EstEnCollision(collision));
+        }
+
+
         private void Affiche()
         {
             // Joueur
@@ -256,40 +270,6 @@ namespace SAE101
             {
                 obst.AfficheObstacle();
             }
-        }
-
-
-        private void ClavierAppui(object objet, KeyEventArgs e)
-        {
-            for (int i = 0; i < boutonsValides.Length; i++)
-            {
-                if (e.Key == boutonsValides[i])
-                {
-                    toutBoutonEnfonce[i] = true;
-                }
-            }
-#if DEBUG
-            // Commandes
-            if (e.Key == Key.NumPad1) GenereObstacle(barque, 1500, 355);
-#endif
-        }
-
-
-        private void ClavierRelache(object objet, KeyEventArgs e)
-        {
-            for (int i = 0; i < boutonsValides.Length; i++)
-            {
-                if (e.Key == boutonsValides[i])
-                {
-                    toutBoutonEnfonce[i] = false;
-                }
-            }
-        }
-
-
-        private void StopTout(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
 
@@ -339,6 +319,94 @@ namespace SAE101
             }
 #endif
             obstacles.Add(obst);
+        }
+
+
+#if DEBUG
+        private void CollisionsDebug()
+        {
+            if (winDEBUG.Col.IsChecked != afficheCollisions)
+            {
+                if (afficheCollisions)
+                {
+                    afficheCollisions = false;
+                    obstacles.ForEach(obstacle => obstacle.CacheCollisions(Canvas));
+                    Canvas.Children.Remove(joueurDebug);
+                }
+                else
+                {
+                    afficheCollisions = true;
+                    obstacles.ForEach(obstacle => obstacle.AfficheCollisions(Canvas));
+                    Canvas.Children.Add(joueurDebug);
+                    Canvas.SetZIndex(joueurDebug, 999);
+                }
+            }
+            if (afficheCollisions)
+            {
+                Canvas.SetLeft(joueurDebug, collision.X);
+                Canvas.SetBottom(joueurDebug, collision.Y);
+            }
+        }
+
+
+        private void AfficheDebug()
+        {
+            if (winDEBUG != null)
+            {
+                winDEBUG.Text.Content =
+                    $"dir = {dir}\n" +
+                    $"vitesse = {FormatDebug(vitesse)} px/t\n" +
+                    $"pos Y Joueur : {FormatDebug(pY)} px\n" +
+                    $"vit Y Joueur : {FormatDebug(vY)} px/t\n" +
+                    $"acc Y Joueur : {FormatDebug(aY)} px/t²\n" +
+                    $"rotat Joueur : {rotation.ToString("F1")} deg\n" +
+                    $"tempsExecMoteur(/1) : {FormatDebug(moyenneExec.Last())} ms\n" +
+                    $"tempsExecMoteur(/{tailleMoyenneExec}) : {FormatDebug(moyenneExec.Average())} ms\n" +
+                    $"elementsCanvas : {Canvas.Children.Count}\n" +
+                    $"estEnCollision : {estEnCollision}\n"
+                    ;
+            }
+        }
+
+
+        private string FormatDebug(double valeur)
+        {
+            return Math.Round(valeur, arrondi).ToString($"F{arrondi}");
+        }
+#endif
+
+
+        private void ClavierAppui(object objet, KeyEventArgs e)
+        {
+            for (int i = 0; i < boutonsValides.Length; i++)
+            {
+                if (e.Key == boutonsValides[i])
+                {
+                    toutBoutonEnfonce[i] = true;
+                }
+            }
+#if DEBUG
+            // Commandes
+            if (e.Key == Key.NumPad1) GenereObstacle(barque, 1500, 350);
+#endif
+        }
+
+
+        private void ClavierRelache(object objet, KeyEventArgs e)
+        {
+            for (int i = 0; i < boutonsValides.Length; i++)
+            {
+                if (e.Key == boutonsValides[i])
+                {
+                    toutBoutonEnfonce[i] = false;
+                }
+            }
+        }
+
+
+        private void StopTout(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

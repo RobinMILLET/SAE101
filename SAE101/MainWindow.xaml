@@ -69,9 +69,9 @@
         <Rectangle
             x:Name="Joueur"
             Canvas.Left="250"
-            Canvas.Bottom="350"
-            Width="70"
-            Height="45"
+            Canvas.Bottom="355"
+            Width="55"
+            Height="35"
             RenderTransformOrigin="0.5,0.5" Panel.ZIndex="98">
             <Rectangle.RenderTransform>
                 <TransformGroup>
