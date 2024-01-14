@@ -27,6 +27,7 @@ namespace SAE101
 
         private void Pin_Click(object sender, RoutedEventArgs e)
         {
+            // Inverser TopMost
             this.Topmost = !this.Topmost;
         }
     }

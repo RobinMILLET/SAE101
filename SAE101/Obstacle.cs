@@ -133,17 +133,23 @@ namespace SAE101
 
         // Méthodes
 
-        public Obstacle GenereObstacle(double x, double y)
+        public Obstacle GenereObstacle()
         {
-            Obstacle obst = new Obstacle(Visuel, Collisions, dX, dY);
-            obst.pX = x;
-            obst.pY = y;
+            Obstacle obst = new Obstacle(Visuel, Collisions);
             return obst;
+        }
+
+
+        public void Place(double x, double y)
+        {
+            PX = x;
+            PY = y;
         }
 
 
         public void PlaceCollisions()
         {
+            // Création des nouvelles collisions pour permettre le placement
             Rect[] vieu = this.Collisions;
             Rect[] nouv = new Rect[vieu.Length];
             for (int i = 0; i < vieu.Length; i++)
@@ -227,6 +233,21 @@ namespace SAE101
         public bool EstEnCollision(Point point)
         {
             return collisions.Any(x => x.Contains(point));
+        }
+
+
+        public void ChangeTaille(double x, double y)
+        {
+            // A executer AVANT AfficheCollisions() et PlaceCollisions()
+            visuel.Width *= x;
+            visuel.Height *= y;
+            for (int i = 0; i < collisions.Count(); i++)
+            {
+                collisions[i].Width *= x;
+                collisions[i].Height *= y;
+                collisions[i].X *= x;
+                collisions[i].Y *= y;
+            }
         }
 
 

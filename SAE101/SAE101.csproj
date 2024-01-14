@@ -7,4 +7,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="vague.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="vague.png" />
+  </ItemGroup>
+
 </Project>

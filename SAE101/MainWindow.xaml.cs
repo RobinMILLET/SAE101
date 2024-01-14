@@ -77,10 +77,12 @@ namespace SAE101
         
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
-        private ImageBrush textureFond = new ImageBrush(); // Fond
-        private ImageBrush textureSol = new ImageBrush(); // Sol
-        private ImageBrush textureVague = new ImageBrush(); // Vague
-        
+        private ImageBrush[,] texturesDecor;
+
+        // Monde
+        private readonly int nbMondes = 3;
+        private int monde = 1;
+
         // Variables pour le DEBUG
         private string dir;
 #if DEBUG
@@ -97,17 +99,31 @@ namespace SAE101
         private List<Obstacle> obstacles = new List<Obstacle> { };
         Obstacle barque;
         private int limiteGauche = -500;
+        private int limiteDroite = 1500;
+
+        // Zindex
+
+        // Fond = 0
+        // Sol = 5
+        // Joueur = 25
+        private int zBarque = 50;
+        // Vague = 100
+        // Labels = 100
+        // Collisions = 999
 
         // FIN DES VARIABLES
 
         public MainWindow()
         {
+            // Répertoir courrant
             dir = AppDomain.CurrentDomain.BaseDirectory;
             dir = dir.Remove(dir.IndexOf("\\bin\\"));
             InitializeComponent();
 #if DEBUG
+            // Créer le rectangle de collision du Joueur
             joueurDebug = new Rectangle() { Width = collision.Width, Height = collision.Height,
                 Stroke = new SolidColorBrush(Colors.Red)};
+
             // Instancier la fenêtre DEBUG
             winDEBUG = new DEBUG();
             winDEBUG.Show();
@@ -117,7 +133,7 @@ namespace SAE101
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
 
-            // Génération du décor 
+            // Préparation du Décor
             elements = new (UIElement, double)[]
             {
                 // ("nom_de_l'objet", vitesse_multiplicatrice)
@@ -125,24 +141,13 @@ namespace SAE101
                 (sol1, vSol), (sol2, vSol),
                 (vague1, vVague), (vague2, vVague)
             };
-            
-            // Fond
-            textureFond.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/fond.png"));
-            fond1.Background = textureFond; fond2.Background = textureFond;
-
-            // Sol
-            textureSol.ImageSource = new BitmapImage(new Uri(dir + "/img/monde1/sol.png"));
-            sol1.Fill = textureSol; sol2.Fill = textureSol;
-
-            // Vague
-            textureVague.ImageSource = new BitmapImage(new Uri(dir + "/img/vague.png"));
-            vague1.Fill = textureVague; vague2.Fill = textureVague;
+            texturesDecor = ObtenirTextures();
+            PlacerTextures();
 
             // Obstacles par défaut
-            barque = ObstacleUsine("/img/monde1/obstacles/barque.png", 0.85,
-                new Rect[] { new Rect(10, 35, 210, 65),
-                    new Rect(100, 0, 65, 50)},
-                -1, 0);
+            barque = ObstacleUsine("/img/monde1/obstacles/barque.png",
+                new Rect[] { new Rect(12, 45, 250, 75),
+                    new Rect(125, 0, 75, 60)});
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -199,7 +204,10 @@ namespace SAE101
             int nObstacle = 0;
             while (nObstacle < obstacles.Count)
             {
+                // Bouger les obstacles
                 obstacles[nObstacle].Mouvement(-vitesse);
+
+                // Tester pour les supprimer
                 if (obstacles[nObstacle].Sorti(Canvas, limiteGauche))
                 {
                     Canvas.Children.Remove(obstacles[nObstacle].Visuel);
@@ -275,6 +283,7 @@ namespace SAE101
 
         private void BougerDecor()
         {
+            // Déplacer le décor avec (élément, dX)
             foreach (var doublon in elements)
             {
                 BougerDecor(doublon.Item1, doublon.Item2);
@@ -284,31 +293,42 @@ namespace SAE101
 
         private void BougerDecor(UIElement objet, double vit)
         {
+            // Comme le décor ne contient pas de collisions par lui même,
+            // On met l'affichage au même endroit que le calcul de position,
+            // Puis on le bouge en fonction du ratio 'tickParImage'
             double posX = Canvas.GetLeft(objet);
             posX -= vitesse * vit * tickParImage;
+            // Faire la boucle
             if (posX < -tailleDecor) posX += 2 * tailleDecor;
+            // Afficher
             Canvas.SetLeft(objet, posX);
         }
 
 
-        private Obstacle ObstacleUsine(string source, double ratioTaille, Rect[] collisions, double dx, double dy)
+        private Obstacle ObstacleUsine(string source, Rect[] collisions)
         {
             ImageBrush img = new ImageBrush(new BitmapImage(new Uri(dir + source)));
             Rectangle visuel = new Rectangle();
-            visuel.Width = img.ImageSource.Width * ratioTaille;
-            visuel.Height = img.ImageSource.Height * ratioTaille;
+            // Obstacle automatiquement de la même taille que son image
+            visuel.Width = img.ImageSource.Width;
+            visuel.Height = img.ImageSource.Height;
             visuel.Fill = img;
-            Canvas.SetZIndex(visuel, 6);
-            return new Obstacle(visuel, collisions, dx, dy);
+            return new Obstacle(visuel, collisions);
         }
 
 
-        private void GenereObstacle(Obstacle usine, double x, double y)
+        private void GenereObstacle(string nom, Obstacle usine)
         {
-            Obstacle obst = usine.GenereObstacle(x, y);
+            Obstacle obst = usine.GenereObstacle();
             Rectangle r1 = obst.Visuel;
             Rectangle r2 = new Rectangle() { Width = r1.Width, Height = r1.Height, Fill = r1.Fill };
+            obst.Collisions = (Rect[]) obst.Collisions.Clone();
             obst.Visuel = r2;
+            // Personnalisation de l'obstacle (comprendre randomisation)
+            switch (nom)
+            {
+                case "barque": PersonnaliseBarque(ref obst); break;
+            }
             Canvas.Children.Add(r2);
             obst.PlaceCollisions();
             obst.AfficheObstacle();
@@ -322,18 +342,59 @@ namespace SAE101
         }
 
 
+        private void PersonnaliseBarque(ref Obstacle obst)
+        {
+            Random rd = new Random();
+            double taille = rd.Next(60,80) / 100.0;
+            obst.ChangeTaille(taille, taille);
+            // Changer le Y en fonction de la taille, car le 0 est sous la pagaie
+            // alors qu'il faut aligner la vague et la coque
+            obst.Place(limiteDroite, 370 - taille * 15);
+            obst.DX = rd.Next(-5, 0);
+            Canvas.SetZIndex(obst.Visuel, zBarque);
+        }
+
+
+        private ImageBrush[,] ObtenirTextures()
+        {
+            ImageBrush[,] textures = new ImageBrush[nbMondes, 2];
+            // 0: Fond
+            // 1: Sol
+            for (int i = 0; i < nbMondes; i++)
+            {
+                textures[i,0] = new ImageBrush() {
+                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i+1}/fond.png"))};
+                textures[i,1] = new ImageBrush() {
+                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i+1}/sol.png"))};
+            }
+            return textures;
+        }
+
+
+        private void PlacerTextures()
+        {
+            // 0: Fond
+            // 1: Sol
+            ImageBrush textureFond = texturesDecor[monde - 1, 0];
+            fond1.Background = textureFond; fond2.Background = textureFond;
+            ImageBrush textureSol = texturesDecor[monde - 1, 1];
+            sol1.Fill = textureSol; sol2.Fill = textureSol;
+        }
+
+
+
 #if DEBUG
         private void CollisionsDebug()
         {
             if (winDEBUG.Col.IsChecked != afficheCollisions)
             {
-                if (afficheCollisions)
+                if (afficheCollisions) // Si true, alors il faut mettre à false
                 {
                     afficheCollisions = false;
                     obstacles.ForEach(obstacle => obstacle.CacheCollisions(Canvas));
                     Canvas.Children.Remove(joueurDebug);
                 }
-                else
+                else // Si false, alors il faut mettre à true
                 {
                     afficheCollisions = true;
                     obstacles.ForEach(obstacle => obstacle.AfficheCollisions(Canvas));
@@ -341,7 +402,7 @@ namespace SAE101
                     Canvas.SetZIndex(joueurDebug, 999);
                 }
             }
-            if (afficheCollisions)
+            if (afficheCollisions) // En continu
             {
                 Canvas.SetLeft(joueurDebug, collision.X);
                 Canvas.SetBottom(joueurDebug, collision.Y);
@@ -351,6 +412,7 @@ namespace SAE101
 
         private void AfficheDebug()
         {
+            // Uniquement si la fenêtre winDEBUG exist (pas fermée, etc)
             if (winDEBUG != null)
             {
                 winDEBUG.Text.Content =
@@ -387,7 +449,7 @@ namespace SAE101
             }
 #if DEBUG
             // Commandes
-            if (e.Key == Key.NumPad1) GenereObstacle(barque, 1500, 350);
+            if (e.Key == Key.NumPad1) GenereObstacle("barque", barque);
 #endif
         }
 
