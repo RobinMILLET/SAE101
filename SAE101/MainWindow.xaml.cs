@@ -98,6 +98,9 @@ namespace SAE101
         // Obstacles
         private List<Obstacle> obstacles = new List<Obstacle> { };
         Obstacle barque;
+        Obstacle bateau;
+        Obstacle caillou;
+        private ImageBrush[] textureCaillou = new ImageBrush[3];
         private int limiteGauche = -500;
         private int limiteDroite = 1500;
 
@@ -141,13 +144,21 @@ namespace SAE101
                 (sol1, vSol), (sol2, vSol),
                 (vague1, vVague), (vague2, vVague)
             };
-            texturesDecor = ObtenirTextures();
+            ObtenirTextures();
             PlacerTextures();
 
             // Obstacles par défaut
             barque = ObstacleUsine("/img/monde1/obstacles/barque.png",
                 new Rect[] { new Rect(12, 45, 250, 75),
                     new Rect(125, 0, 75, 60)});
+
+            bateau = ObstacleUsine("/img/monde2/obstacles/bateau.png",
+                new Rect[] { new Rect(15, 5, 325, 125),
+                    new Rect(75, 125, 250, 75)});
+
+            caillou = ObstacleUsine("/img/monde1/obstacles/caillou/caillou1.png",
+                new Rect[] { new Rect(5, 0, 100, 100)});
+
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -328,6 +339,8 @@ namespace SAE101
             switch (nom)
             {
                 case "barque": PersonnaliseBarque(ref obst); break;
+                case "bateau": PersonnaliseBateau(ref obst); break;
+                case "caillou": PersonnaliseCaillou(ref obst); break;
             }
             Canvas.Children.Add(r2);
             obst.PlaceCollisions();
@@ -355,19 +368,51 @@ namespace SAE101
         }
 
 
-        private ImageBrush[,] ObtenirTextures()
+        private void PersonnaliseBateau(ref Obstacle obst)
+        {
+            Random rd = new Random();
+            double taille = rd.Next(50, 75) / 100.0;
+            obst.ChangeTaille(taille, taille);
+            // Changer le Y en fonction de la taille, car le 0 est sous la pagaie
+            // alors qu'il faut aligner la vague et la coque
+            obst.Place(limiteDroite, 370 - taille * 15);
+            obst.DX = rd.Next(-5, 0);
+            Canvas.SetZIndex(obst.Visuel, zBarque);
+        }
+
+        private void PersonnaliseCaillou(ref Obstacle obst)
+        {
+            Random rd = new Random();
+            obst.Visuel.Fill = textureCaillou[rd.Next(0, 2)];
+            double taille = rd.Next(25, 100) / 100.0;
+            obst.ChangeTaille(taille, taille);
+            obst.Place(limiteDroite, 25);
+            Canvas.SetZIndex(obst.Visuel, zBarque);
+        }
+
+
+        private void ObtenirTextures()
         {
             ImageBrush[,] textures = new ImageBrush[nbMondes, 2];
             // 0: Fond
             // 1: Sol
             for (int i = 0; i < nbMondes; i++)
             {
-                textures[i,0] = new ImageBrush() {
-                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i+1}/fond.png"))};
-                textures[i,1] = new ImageBrush() {
-                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i+1}/sol.png"))};
+                textures[i, 0] = new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i + 1}/fond.png"))
+                };
+                textures[i, 1] = new ImageBrush()
+                {
+                    ImageSource = new BitmapImage(new Uri(dir + $"/img/monde{i + 1}/sol.png"))
+                };
             }
-            return textures;
+            texturesDecor = textures;
+
+            for (int i = 0; i < 3; i++)
+            {
+                textureCaillou[i] = new ImageBrush(new BitmapImage(new Uri(dir + $"/img/monde1/obstacles/caillou/caillou{i + 1}.png")));
+            }
         }
 
 
@@ -450,6 +495,8 @@ namespace SAE101
 #if DEBUG
             // Commandes
             if (e.Key == Key.NumPad1) GenereObstacle("barque", barque);
+            if (e.Key == Key.NumPad2) GenereObstacle("bateau", bateau);
+            if (e.Key == Key.NumPad3) GenereObstacle("caillou", caillou);
 #endif
         }
 
