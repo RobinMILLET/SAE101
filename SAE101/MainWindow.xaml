@@ -13,6 +13,9 @@
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+    <Window.Resources>
+        <FontFamily x:Key="Police">/SAE101;component/police/police.ttf#Minecraft</FontFamily>
+    </Window.Resources>
     <Canvas
         x:Name="Canvas"
         Focusable="True"
@@ -21,14 +24,14 @@
         <Canvas
             x:Name="fond1"
             Canvas.Left="0"
-            Width="2500"
+            Width="2480"
             Height="750"
             HorizontalAlignment="Left"
             VerticalAlignment="Center" Panel.ZIndex="0" />
         <Canvas
             x:Name="fond2"
-            Canvas.Left="2479"
-            Width="2500"
+            Canvas.Left="2480"
+            Width="2480"
             Height="750"
             HorizontalAlignment="Left"
             VerticalAlignment="Top" Panel.ZIndex="0" />
@@ -37,7 +40,7 @@
             Canvas.Left="10"
             Canvas.Top="10"
             Content="Distance : 0000"
-            FontFamily="Arial monospaced for SAP"
+            FontFamily="{StaticResource Police}"
             FontSize="36"
             FontWeight="Bold" Panel.ZIndex="100" />
         <Label
@@ -47,22 +50,22 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Content="Temps : 0000"
-            FontFamily="Arial monospaced for SAP"
+            FontFamily="{StaticResource Police}"
             FontSize="36"
             FontWeight="Bold" Panel.ZIndex="100" />
         <Rectangle
             x:Name="sol1"
             Canvas.Left="0"
-            Canvas.Bottom="0"
-            Width="2500"
+            Canvas.Bottom="-40"
+            Width="2480"
             Height="100"
             HorizontalAlignment="Center"
             VerticalAlignment="Top" Panel.ZIndex="5" />
         <Rectangle
             x:Name="sol2"
             Canvas.Left="2480"
-            Canvas.Bottom="0"
-            Width="2500"
+            Canvas.Bottom="-40"
+            Width="2480"
             Height="100"
             HorizontalAlignment="Center"
             VerticalAlignment="Top" Panel.ZIndex="5" />
@@ -85,8 +88,8 @@
         <Rectangle
             x:Name="vague1"
             Canvas.Left="0"
-            Canvas.Bottom="381"
-            Width="2500"
+            Canvas.Bottom="380"
+            Width="2480"
             Height="30" Panel.ZIndex="100" >
             <Rectangle.Fill>
                 <ImageBrush ImageSource="/vague.png"/>
@@ -95,8 +98,8 @@
         <Rectangle
             x:Name="vague2"
             Canvas.Left="2480"
-            Canvas.Bottom="381"
-            Width="2500"
+            Canvas.Bottom="380"
+            Width="2480"
             Height="30" Panel.ZIndex="100" >
             <Rectangle.Fill>
                 <ImageBrush ImageSource="/vague.png"/>

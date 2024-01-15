@@ -8,7 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="police\police.ttf" />
     <None Remove="vague.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="police\police.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
