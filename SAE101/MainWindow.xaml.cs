@@ -60,19 +60,19 @@ namespace SAE101
         private bool vaSplash = false;
         
         // Vitesse X et Parallax
-        private int tailleDecor = 2480;
+        private readonly int tailleDecor = 2480;
         private double vitesse = 10;
-        private double vFond = 0.1; // Fond
-        private double vSol = 1; // Sol
-        private double vVague = 1.25; // Vague
+        private readonly double vFond = 0.1; // Fond
+        private readonly double vSol = 1; // Sol
+        private readonly double vVague = 1.25; // Vague
         private (UIElement, double)[] elements;
         
         // Joueur
         private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
         private double rotation;
         private Rect collision = new Rect() { Width = 35, Height = 35 };
-        private double decaleX = 15;
-        private double decaleY = 0;
+        private readonly double decaleX = 15;
+        private readonly double decaleY = 0;
         private bool estEnCollision = false;
         private (double, double) verifCollision = (-250, +50);
         
@@ -104,21 +104,32 @@ namespace SAE101
         Obstacle oiseau;
         private ImageBrush[] textureCaillou = new ImageBrush[3];
         private BitmapImage[] textureOiseau = new BitmapImage[2];
-        private int limiteGauche = -500;
+        private readonly int limiteGauche = -500;
         private int limiteDroite = 1500;
+        private readonly (int, int) borneApparition = (2, 5);
+        private int prochaineApparition = 5;
 
         // Zindex
 
-        // Fond = 0
-        // Sol = 5
-        // Joueur = 25
-        private int zOiseau = 50;
-        private int zBarque = 75;
-        private int zBateau = 85;
-        private int zCaillou = 85;
-        // Vague = 100
-        // Labels = 100
-        // Collisions = 999
+        // Fond = 0 ; Sol = 5 ; Joueur = 25
+        private readonly Dictionary<string, int> zSelonNom = new Dictionary<string, int>()
+        {
+            {"barque", 75 },
+            {"bateau", 80 },
+            {"caillou", 85 },
+            {"oiseau", 50 },
+        };
+        // Vague = 100 ; Labels = 100 ; Collisions = 999
+
+        // Personnalisation
+        private readonly Dictionary<string, int[]> persoSelonNom = new Dictionary<string, int[]>()
+        {
+            // min Y, max Y, min taille/100, max taille/100, min dx, max dx, min dy/10, max dy/10
+            {"barque", new int[8] { 355, 365, 60, 80, -5, 0, 0, 0} },
+            {"bateau", new int[8] { 355, 365, 50, 75, -5, 0, 0, 0} },
+            {"caillou", new int[8] { 25, 25, 50, 100, 0, 0, 0, 0} },
+            {"oiseau", new int[8] { 500, 600, 25, 50, -5, 2, -5, 5} },
+        };
 
         // FIN DES VARIABLES
 
@@ -157,20 +168,19 @@ namespace SAE101
             PlacerTextures();
 
             // Obstacles par défaut
-            barque = ObstacleUsine("/img/monde1/obstacles/barque.png",
+            barque = ObstacleUsine("barque", "/img/monde1/obstacles/barque.png",
                 new Rect[] { new Rect(12, 45, 250, 75),
                     new Rect(125, 0, 75, 60)});
 
-            bateau = ObstacleUsine("/img/monde2/obstacles/bateau.png",
+            bateau = ObstacleUsine("bateau", "/img/monde2/obstacles/bateau.png",
                 new Rect[] { new Rect(15, 5, 325, 125),
                     new Rect(75, 125, 250, 75)});
 
-            caillou = ObstacleUsine("/img/monde1/obstacles/caillou/caillou1.png",
+            caillou = ObstacleUsine("caillou", "/img/monde1/obstacles/caillou/caillou1.png",
                 new Rect[] { new Rect(5, 0, 100, 100)});
 
-            oiseau = ObstacleUsine("/img/monde2/obstacles/oiseau.gif",
+            oiseau = ObstacleUsine("oiseau", "/img/monde2/obstacles/oiseau.gif",
                 new Rect[] { new Rect(25, 35, 125, 75) });
-
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -185,10 +195,12 @@ namespace SAE101
             chronoDEBUG.Restart();
 #endif
             score += vitesse / 100;
+
             DetecteAppui();
             GereObstacles();
             PhysiqueJoueur();
             Collision();
+            Apparition();
 
             if (tick >= tickParImage)
             {
@@ -233,8 +245,9 @@ namespace SAE101
 
                 // Tester pour les supprimer
                 if (obstacles[nObstacle].Sorti(Canvas, limiteGauche))
-                {
-                    if (obstacles[nObstacle].Animation == null)
+                {  
+                    // Retirer de l'écran
+                    if (!obstacles[nObstacle].Anime)
                     {
                         Canvas.Children.Remove(obstacles[nObstacle].Visuel);
                     }
@@ -295,6 +308,15 @@ namespace SAE101
         }
 
 
+        private void Apparition()
+        {
+            if (prochaineApparition > score) return;
+            Random rd = new Random();
+            prochaineApparition += rd.Next(borneApparition.Item1, borneApparition.Item2);
+            // Faire apparaître
+        }
+
+
         private void Affiche()
         {
             // Joueur
@@ -335,42 +357,40 @@ namespace SAE101
         }
 
 
-        private Obstacle ObstacleUsine(string source, Rect[] collisions)
+        private Obstacle ObstacleUsine(string nom, string source, Rect[] collisions)
         {
-            ImageBrush img = new ImageBrush(new BitmapImage(new Uri(dir + source)));
-            Rectangle visuel = new Rectangle();
-            // Obstacle automatiquement de la même taille que son image
-            visuel.Width = img.ImageSource.Width;
-            visuel.Height = img.ImageSource.Height;
-            visuel.Fill = img;
-            return new Obstacle(visuel, collisions);
+            if (source.EndsWith(".png"))
+            {
+                ImageBrush img = new ImageBrush(new BitmapImage(new Uri(dir + source)));
+                Rectangle visuel = new Rectangle()
+                { Fill = img, Width = img.ImageSource.Width, Height = img.ImageSource.Height };
+                return new Obstacle(nom, visuel, collisions);
+            }
+            else if (source.EndsWith(".gif"))
+            {
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(dir + source);
+                image.EndInit();
+                Image visuel = new Image()
+                { Width = image.Width, Height = image.Height, Source = image };
+                ImageBehavior.SetAnimatedSource(visuel, image);
+                return new Obstacle(nom, visuel, collisions);
+            }
+            throw new NotImplementedException();
         }
 
 
-        private void GenereObstacle(string nom, Obstacle usine)
+        private void GenereObstacle(Obstacle usine)
         {
             Obstacle obst = usine.GenereObstacle();
-            Rectangle r1 = obst.Visuel;
-            Rectangle r2 = new Rectangle() { Width = r1.Width, Height = r1.Height, Fill = r1.Fill };
-            obst.Collisions = (Rect[]) obst.Collisions.Clone();
-            obst.Visuel = r2;
-            // Personnalisation de l'obstacle (comprendre randomisation)
-            switch (nom)
-            {
-                case "barque": PersonnaliseBarque(ref obst); break;
-                case "bateau": PersonnaliseBateau(ref obst); break;
-                case "caillou": PersonnaliseCaillou(ref obst); break;
-                case "oiseau": PersonnaliseOiseau(ref obst); break;
-            }
 
-            if (obst.Animation == null)
-            {
-                Canvas.Children.Add(r2);
-            }
-            else
-            {
-                Canvas.Children.Add(obst.Animation);
-            }
+            // Changer les références pour permettre l'existence parallele de plusieurs instances
+            Cloner(ref obst);
+
+            // Personnalisation de l'obstacle (comprendre randomisation)
+            Personnalise(ref obst, persoSelonNom[obst.Nom]);
+
             obst.PlaceCollisions();
             obst.AfficheObstacle();
 #if DEBUG
@@ -383,53 +403,44 @@ namespace SAE101
         }
 
 
-        private void PersonnaliseBarque(ref Obstacle obst)
+        private void Cloner(ref Obstacle obst)
         {
-            Random rd = new Random();
-            double taille = rd.Next(60,80) / 100.0;
-            obst.ChangeTaille(taille, taille);
-            // Changer le Y en fonction de la taille, car le 0 est sous la pagaie
-            // alors qu'il faut aligner la vague et la coque
-            obst.Place(limiteDroite, 370 - taille * 15);
-            obst.DX = rd.Next(-5, 0);
-            Canvas.SetZIndex(obst.Visuel, zBarque);
+            obst.Collisions = (Rect[]) obst.Collisions.Clone();
+            if (!obst.Anime)
+            {
+                Rectangle r = obst.Visuel;
+                Rectangle visuel = new Rectangle()
+                { Width = r.Width, Height = r.Height, Fill = r.Fill };
+                obst.Visuel = visuel;
+                Canvas.Children.Add(visuel);
+                Canvas.SetZIndex(visuel, zSelonNom[obst.Nom]);
+            }
+            else
+            {
+                Image i = obst.Animation;
+                Image animation = new Image()
+                { Source = i.Source };
+                ImageBehavior.SetAnimatedSource(animation, i.Source);
+                obst.Animation = animation;
+                Canvas.Children.Add(animation);
+                Canvas.SetZIndex(animation, zSelonNom[obst.Nom]);
+            }
         }
 
 
-        private void PersonnaliseBateau(ref Obstacle obst)
+        private void Personnalise(ref Obstacle obst, int[] param)
         {
             Random rd = new Random();
-            double taille = rd.Next(50, 75) / 100.0;
-            obst.ChangeTaille(taille, taille);
-            // Changer le Y en fonction de la taille, car le 0 est sous la pagaie
-            // alors qu'il faut aligner la vague et la coque
-            obst.Place(limiteDroite, 370 - taille * 15);
-            obst.DX = rd.Next(-5, 0);
-            Canvas.SetZIndex(obst.Visuel, zBateau);
-        }
+            obst.ChangeTaille(rd.Next(param[2], param[3])/100.0);
+            obst.Place(limiteDroite, rd.Next(param[0], param[1]));
+            obst.DX = rd.Next(param[4], param[5]);
+            obst.DY = rd.Next(param[6], param[7])/10.0;
 
-        private void PersonnaliseCaillou(ref Obstacle obst)
-        {
-            Random rd = new Random();
-            obst.Visuel.Fill = textureCaillou[rd.Next(0, 2)];
-            double taille = rd.Next(25, 100) / 100.0;
-            obst.ChangeTaille(taille, taille);
-            obst.Place(limiteDroite, 25);
-            Canvas.SetZIndex(obst.Visuel, zCaillou);
-        }
-
-
-        private void PersonnaliseOiseau(ref Obstacle obst)
-        {
-            Random rd = new Random();
-            Image img = new Image();
-            ImageBehavior.SetAnimatedSource(img, textureOiseau[0]);
-            obst.Animation = img;
-            double taille = rd.Next(25, 50) / 100.0;
-            obst.ChangeTaille(taille, taille);
-            obst.Place(limiteDroite, rd.Next(500, 600));
-            obst.DY = rd.Next(-5, 5) / 10.0;
-            Canvas.SetZIndex(obst.Animation, zOiseau);
+            // Personnalisation spécifique
+            switch (obst.Nom)
+            {
+                case "caillou": obst.Visuel.Fill = textureCaillou[rd.Next(0, 2)]; break;
+            }
         }
 
 
@@ -451,20 +462,11 @@ namespace SAE101
             }
             texturesDecor = textures;
 
+            // Caillou
             for (int i = 0; i < 3; i++)
             {
                 textureCaillou[i] = new ImageBrush(new BitmapImage(new Uri(dir + $"/img/monde1/obstacles/caillou/caillou{i + 1}.png")));
-            }
-
-            for (int i = 0;i < 2; i++)
-            {
-                BitmapImage image = new BitmapImage();
-                image.BeginInit();
-                image.UriSource = new Uri(dir + $"/img/monde{i + 2}/obstacles/oiseau.gif");
-                image.EndInit();
-                textureOiseau[i] = image;
-            }
-            
+            }        
         }
 
 
@@ -546,10 +548,10 @@ namespace SAE101
             }
 #if DEBUG
             // Commandes
-            if (e.Key == Key.NumPad1) GenereObstacle("barque", barque);
-            if (e.Key == Key.NumPad2) GenereObstacle("bateau", bateau);
-            if (e.Key == Key.NumPad3) GenereObstacle("caillou", caillou);
-            if (e.Key == Key.NumPad4) GenereObstacle("oiseau", oiseau);
+            if (e.Key == Key.NumPad1) GenereObstacle(barque);
+            if (e.Key == Key.NumPad2) GenereObstacle(bateau);
+            if (e.Key == Key.NumPad3) GenereObstacle(caillou);
+            if (e.Key == Key.NumPad4) GenereObstacle(oiseau);
 #endif
         }
 

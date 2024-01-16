@@ -18,32 +18,51 @@ namespace SAE101
 
         private Rectangle visuel;
         private Image animation;
+        private bool anime = false;
         private Rect[] collisions = new Rect[0];
         private double dX = 0;
         private double dY = 0;
         private Rectangle[] visuelCollisions = new Rectangle[0];
         private double pX = 0;
         private double pY = 0;
+        private string nom = "";
 
         // Constructeurs
 
-        public Obstacle(Rectangle visuel, Rect[] collisions, double dX = 0, double dY = 0)
+        public Obstacle(string nom, Rectangle visuel, Rect[] collisions, double dX = 0, double dY = 0)
         {
+            this.Nom = nom;
             this.Visuel = visuel;
+            this.Anime = false;
             this.Collisions = collisions;
             this.DX = dX;
             this.DY = dY;
         }
 
-        public Obstacle(Image animation, Rect[] collisions, double dX = 0, double dY = 0)
+        public Obstacle(string nom, Image animation, Rect[] collisions, double dX = 0, double dY = 0)
         {
+            this.Nom = nom;
             this.Animation = animation;
+            this.Anime = true;
             this.Collisions = collisions;
             this.DX = dX;
             this.DY = dY;
         }
 
         // Propriétés
+
+        public string Nom
+        {
+            get
+            {
+                return nom;
+            }
+
+            set
+            {
+                nom = value;
+            }
+        }
 
         public Rectangle Visuel
         {
@@ -68,6 +87,20 @@ namespace SAE101
             set
             {
                 animation = value;
+            }
+        }
+
+
+        public bool Anime
+        {
+            get
+            {
+                return anime;
+            }
+
+            set
+            {
+                anime = value;
             }
         }
 
@@ -158,13 +191,13 @@ namespace SAE101
         public Obstacle GenereObstacle()
         {
             Obstacle obst;
-            if (this.animation == null)
+            if (!anime)
             {
-                obst = new Obstacle(Visuel, Collisions);
+                obst = new Obstacle(Nom, Visuel, Collisions);
             }
             else
             {
-                obst = new Obstacle(Animation, Collisions);
+                obst = new Obstacle(Nom, Animation, Collisions);
             }
             return obst;
         }
@@ -204,7 +237,7 @@ namespace SAE101
 
         public void AfficheObstacle()
         {
-            if (this.animation == null)
+            if (!anime)
             {
                 Canvas.SetLeft(visuel, pX);
                 Canvas.SetBottom(visuel, pY);
@@ -306,10 +339,17 @@ namespace SAE101
         }
 
 
+        // Uniforme
+        public void ChangeTaille(double xy)
+        {
+            ChangeTaille(xy, xy);
+        }
+
+
         public void ChangeTaille(double x, double y)
         {
             // A executer AVANT AfficheCollisions() et PlaceCollisions()
-            if (this.animation == null)
+            if (!anime)
             {
                 visuel.Width *= x;
                 visuel.Height *= y;
@@ -334,8 +374,9 @@ namespace SAE101
         public bool Sorti(Canvas canvas, int limite = 0)
         {
             double tailleX;
-            if (animation == null) { tailleX = visuel.Width; }
+            if (!anime) { tailleX = visuel.Width; }
             else tailleX = animation.RenderSize.Width;
+            
             if (PX < canvas.Margin.Left + limite - tailleX)
             {
 #if DEBUG
