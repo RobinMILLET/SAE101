@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using WpfAnimatedGif;
 
 namespace SAE101
 {
@@ -30,9 +31,8 @@ namespace SAE101
         // Personnalisable par l'utilisateur
         private Key[] boutonsValides = new Key[6] { Key.Z, Key.W, Key.Up, Key.Down, Key.Space, Key.Enter };
         
-        // Score et Temps
-        private int score = 0;
-        private double temps = 0;
+        // Score
+        private double score = 0;
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -74,6 +74,7 @@ namespace SAE101
         private double decaleX = 15;
         private double decaleY = 0;
         private bool estEnCollision = false;
+        private (double, double) verifCollision = (-250, +50);
         
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
@@ -91,7 +92,7 @@ namespace SAE101
         private bool afficheCollisions = false;
         private DEBUG winDEBUG;
         private Stopwatch chronoDEBUG = new Stopwatch();
-        private readonly int tailleMoyenneExec = 500;
+        private readonly int tailleMoyenneExec = 100;
         private List<double> moyenneExec = new List<double> { };
 #endif
         
@@ -100,7 +101,9 @@ namespace SAE101
         Obstacle barque;
         Obstacle bateau;
         Obstacle caillou;
+        Obstacle oiseau;
         private ImageBrush[] textureCaillou = new ImageBrush[3];
+        private BitmapImage[] textureOiseau = new BitmapImage[2];
         private int limiteGauche = -500;
         private int limiteDroite = 1500;
 
@@ -109,7 +112,10 @@ namespace SAE101
         // Fond = 0
         // Sol = 5
         // Joueur = 25
-        private int zBarque = 50;
+        private int zOiseau = 50;
+        private int zBarque = 75;
+        private int zBateau = 85;
+        private int zCaillou = 85;
         // Vague = 100
         // Labels = 100
         // Collisions = 999
@@ -118,7 +124,7 @@ namespace SAE101
 
         public MainWindow()
         {
-            // Répertoir courrant
+            // Répertoire courrant
             dir = AppDomain.CurrentDomain.BaseDirectory;
             dir = dir.Remove(dir.IndexOf("\\bin\\"));
             InitializeComponent();
@@ -135,6 +141,9 @@ namespace SAE101
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
+
+            // Collision
+            verifCollision = (verifCollision.Item1 + X, verifCollision.Item2 + X);
 
             // Préparation du Décor
             elements = new (UIElement, double)[]
@@ -159,6 +168,9 @@ namespace SAE101
             caillou = ObstacleUsine("/img/monde1/obstacles/caillou/caillou1.png",
                 new Rect[] { new Rect(5, 0, 100, 100)});
 
+            oiseau = ObstacleUsine("/img/monde2/obstacles/oiseau.gif",
+                new Rect[] { new Rect(25, 35, 125, 75) });
+
 
             // Moteur
             Horloge.Tick += MoteurDeJeu;
@@ -172,6 +184,7 @@ namespace SAE101
 #if DEBUG
             chronoDEBUG.Restart();
 #endif
+            score += vitesse / 100;
             DetecteAppui();
             GereObstacles();
             PhysiqueJoueur();
@@ -221,7 +234,14 @@ namespace SAE101
                 // Tester pour les supprimer
                 if (obstacles[nObstacle].Sorti(Canvas, limiteGauche))
                 {
-                    Canvas.Children.Remove(obstacles[nObstacle].Visuel);
+                    if (obstacles[nObstacle].Animation == null)
+                    {
+                        Canvas.Children.Remove(obstacles[nObstacle].Visuel);
+                    }
+                    else
+                    {
+                        Canvas.Children.Remove(obstacles[nObstacle].Animation);
+                    }
                     obstacles.RemoveAt(nObstacle);
                 }
                 else nObstacle++;
@@ -271,7 +291,7 @@ namespace SAE101
         {
             collision.X = X + decaleX;
             collision.Y = pY + decaleY;
-            estEnCollision = obstacles.Any(obst => obst.EstEnCollision(collision));
+            estEnCollision = obstacles.Any(obst => obst.EstEnCollision(collision, verifCollision));
         }
 
 
@@ -282,8 +302,7 @@ namespace SAE101
             rotation = Math.Round( -90 * Math.Atanh(Math.Round(vY, 2) / ratioRotation), 1);
             Joueur.RenderTransform = new RotateTransform(rotation);
             // Score
-            lbDistance.Content = $"Distance : {score}m";
-            lbTemps.Content = $"Temps : {temps}s";
+            lbDistance.Content = Math.Round(score, 0);
             // Obstacle
             foreach (Obstacle obst in obstacles)
             {
@@ -341,8 +360,17 @@ namespace SAE101
                 case "barque": PersonnaliseBarque(ref obst); break;
                 case "bateau": PersonnaliseBateau(ref obst); break;
                 case "caillou": PersonnaliseCaillou(ref obst); break;
+                case "oiseau": PersonnaliseOiseau(ref obst); break;
             }
-            Canvas.Children.Add(r2);
+
+            if (obst.Animation == null)
+            {
+                Canvas.Children.Add(r2);
+            }
+            else
+            {
+                Canvas.Children.Add(obst.Animation);
+            }
             obst.PlaceCollisions();
             obst.AfficheObstacle();
 #if DEBUG
@@ -377,7 +405,7 @@ namespace SAE101
             // alors qu'il faut aligner la vague et la coque
             obst.Place(limiteDroite, 370 - taille * 15);
             obst.DX = rd.Next(-5, 0);
-            Canvas.SetZIndex(obst.Visuel, zBarque);
+            Canvas.SetZIndex(obst.Visuel, zBateau);
         }
 
         private void PersonnaliseCaillou(ref Obstacle obst)
@@ -387,7 +415,21 @@ namespace SAE101
             double taille = rd.Next(25, 100) / 100.0;
             obst.ChangeTaille(taille, taille);
             obst.Place(limiteDroite, 25);
-            Canvas.SetZIndex(obst.Visuel, zBarque);
+            Canvas.SetZIndex(obst.Visuel, zCaillou);
+        }
+
+
+        private void PersonnaliseOiseau(ref Obstacle obst)
+        {
+            Random rd = new Random();
+            Image img = new Image();
+            ImageBehavior.SetAnimatedSource(img, textureOiseau[0]);
+            obst.Animation = img;
+            double taille = rd.Next(25, 50) / 100.0;
+            obst.ChangeTaille(taille, taille);
+            obst.Place(limiteDroite, rd.Next(500, 600));
+            obst.DY = rd.Next(-5, 5) / 10.0;
+            Canvas.SetZIndex(obst.Animation, zOiseau);
         }
 
 
@@ -413,6 +455,16 @@ namespace SAE101
             {
                 textureCaillou[i] = new ImageBrush(new BitmapImage(new Uri(dir + $"/img/monde1/obstacles/caillou/caillou{i + 1}.png")));
             }
+
+            for (int i = 0;i < 2; i++)
+            {
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(dir + $"/img/monde{i + 2}/obstacles/oiseau.gif");
+                image.EndInit();
+                textureOiseau[i] = image;
+            }
+            
         }
 
 
@@ -497,6 +549,7 @@ namespace SAE101
             if (e.Key == Key.NumPad1) GenereObstacle("barque", barque);
             if (e.Key == Key.NumPad2) GenereObstacle("bateau", bateau);
             if (e.Key == Key.NumPad3) GenereObstacle("caillou", caillou);
+            if (e.Key == Key.NumPad4) GenereObstacle("oiseau", oiseau);
 #endif
         }
 

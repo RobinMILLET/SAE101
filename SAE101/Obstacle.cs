@@ -17,6 +17,7 @@ namespace SAE101
         // Champs
 
         private Rectangle visuel;
+        private Image animation;
         private Rect[] collisions = new Rect[0];
         private double dX = 0;
         private double dY = 0;
@@ -34,6 +35,14 @@ namespace SAE101
             this.DY = dY;
         }
 
+        public Obstacle(Image animation, Rect[] collisions, double dX = 0, double dY = 0)
+        {
+            this.Animation = animation;
+            this.Collisions = collisions;
+            this.DX = dX;
+            this.DY = dY;
+        }
+
         // Propriétés
 
         public Rectangle Visuel
@@ -46,6 +55,19 @@ namespace SAE101
             set
             {
                 visuel = value;
+            }
+        }
+
+        public Image Animation
+        {
+            get
+            {
+                return animation;
+            }
+
+            set
+            {
+                animation = value;
             }
         }
 
@@ -135,7 +157,15 @@ namespace SAE101
 
         public Obstacle GenereObstacle()
         {
-            Obstacle obst = new Obstacle(Visuel, Collisions);
+            Obstacle obst;
+            if (this.animation == null)
+            {
+                obst = new Obstacle(Visuel, Collisions);
+            }
+            else
+            {
+                obst = new Obstacle(Animation, Collisions);
+            }
             return obst;
         }
 
@@ -163,16 +193,27 @@ namespace SAE101
         public void Mouvement(double x)
         {
             pX += x + this.DX;
+            pY += this.DY;
             for (int i = 0; i < Collisions.Length; i++)
             {
                 Collisions[i].X += x + this.DX;
+                Collisions[i].Y += this.DY;
             }
         }
 
+
         public void AfficheObstacle()
         {
-            Canvas.SetLeft(visuel, pX);
-            Canvas.SetBottom(visuel, pY);
+            if (this.animation == null)
+            {
+                Canvas.SetLeft(visuel, pX);
+                Canvas.SetBottom(visuel, pY);
+            }
+            else
+            {
+                Canvas.SetLeft(animation, pX);
+                Canvas.SetBottom(animation, pY);
+            }
 #if DEBUG
             for (int i = 0; i < VisuelCollisions.Length; i++)
             {
@@ -194,6 +235,7 @@ namespace SAE101
                 visuelCollisions[i] = r;
             }
         }
+
 
         public void CacheCollisions(Canvas canvas)
         {
@@ -219,7 +261,35 @@ namespace SAE101
         }
 #endif
 
+        // Avec borne
+        public bool EstEnCollision(Rect rect, (double, double) borne)
+        {
+            if (borne.Item1 < pX && pX < borne.Item2)
+            {
+                return EstEnCollision(rect);
+            }
+            return false;
+        }
 
+        public bool EstEnCollision(double X, double Y, (double, double) borne)
+        {
+            if (borne.Item1 < pX && pX < borne.Item2)
+            {
+                return EstEnCollision(X, Y);
+            }
+            return false;
+        }
+
+        public bool EstEnCollision(Point point, (double, double) borne)
+        {
+            if (borne.Item1 < pX && pX < borne.Item2)
+            {
+                return EstEnCollision(point);
+            }
+            return false;
+        }
+
+        // Sans borne
         public bool EstEnCollision(Rect rect)
         {
             return collisions.Any(x => x.IntersectsWith(rect));
@@ -239,8 +309,18 @@ namespace SAE101
         public void ChangeTaille(double x, double y)
         {
             // A executer AVANT AfficheCollisions() et PlaceCollisions()
-            visuel.Width *= x;
-            visuel.Height *= y;
+            if (this.animation == null)
+            {
+                visuel.Width *= x;
+                visuel.Height *= y;
+            }
+            else
+            {
+                ScaleTransform t = new ScaleTransform() {ScaleX = x, ScaleY = y, CenterX = pX, CenterY = pY};
+                animation.RenderTransformOrigin = new Point(0,1);
+                animation.RenderTransform = t;
+            }
+            
             for (int i = 0; i < collisions.Count(); i++)
             {
                 collisions[i].Width *= x;
@@ -253,7 +333,10 @@ namespace SAE101
 
         public bool Sorti(Canvas canvas, int limite = 0)
         {
-            if (PX < canvas.Margin.Left + limite - visuel.Width)
+            double tailleX;
+            if (animation == null) { tailleX = visuel.Width; }
+            else tailleX = animation.RenderSize.Width;
+            if (PX < canvas.Margin.Left + limite - tailleX)
             {
 #if DEBUG
                 this.CacheCollisions(canvas);
