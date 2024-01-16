@@ -22,8 +22,9 @@
         x:Name="Canvas"
         Focusable="True"
         KeyDown="ClavierAppui"
-        KeyUp="ClavierRelache">
-        <Canvas
+        KeyUp="ClavierRelache"
+        Visibility="Visible">
+        <Rectangle
             x:Name="fond1"
             Canvas.Left="0"
             Width="2480"
@@ -31,7 +32,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
             Panel.ZIndex="0" />
-        <Canvas
+        <Rectangle
             x:Name="fond2"
             Canvas.Left="2480"
             Width="2480"
@@ -90,24 +91,109 @@
         <Rectangle
             x:Name="vague1"
             Canvas.Left="0"
-            Canvas.Bottom="380"
+            Canvas.Bottom="371"
             Width="2480"
             Height="30"
             Panel.ZIndex="100">
             <Rectangle.Fill>
-                <ImageBrush ImageSource="/vague.png" />
+                <ImageBrush ImageSource="img/vague.png" />
             </Rectangle.Fill>
         </Rectangle>
         <Rectangle
             x:Name="vague2"
             Canvas.Left="2480"
-            Canvas.Bottom="380"
+            Canvas.Bottom="371"
             Width="2480"
             Height="30"
             Panel.ZIndex="100">
             <Rectangle.Fill>
-                <ImageBrush ImageSource="/vague.png" />
+                <ImageBrush ImageSource="img/vague.png" />
             </Rectangle.Fill>
         </Rectangle>
     </Canvas>
+    <!-- <Canvas x:Name="Menu" Visibility="Visible">
+        <Canvas.Background>
+            <ImageBrush ImageSource="/img/monde1/fond.png" Stretch="UniformToFill" />
+        </Canvas.Background>
+        <Rectangle
+                x:Name="solMenu"
+                Canvas.Left="0"
+                Canvas.Bottom="-20"
+                Width="1250"
+                Height="100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="/img/monde1/sol.png" Stretch="UniformToFill" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle
+                x:Name="vagueMenu"
+                Canvas.Left="0"
+                Canvas.Bottom="398"
+                Width="1250"
+                Height="30">
+            <Rectangle.Fill>
+                <ImageBrush ImageSource="img/vague.png" Stretch="UniformToFill" />
+            </Rectangle.Fill>
+        </Rectangle>
+        <Canvas
+                Canvas.Left="-1980"
+                Width="2480"
+                Height="750">
+            <Canvas.Background>
+                <ImageBrush ImageSource="/img/transition.png" />
+            </Canvas.Background>
+        </Canvas>
+        <Label
+                x:Name="titre"
+                Canvas.Left="40"
+                Canvas.Top="64"
+                Content="FISH"
+                FontFamily="{StaticResource Police}"
+                FontSize="120"
+                Foreground="White" />
+        <Label
+                x:Name="btnJouer"
+                Canvas.Left="64"
+                Canvas.Bottom="350"
+                Content="Jouer"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White" MouseLeftButtonUp="Jouer" />
+        <Label
+                x:Name="btnQuitter"
+                Canvas.Left="64"
+                Canvas.Bottom="275"
+                Content="Quitter"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseLeftButtonUp="Quitter" />
+        <Canvas
+                x:Name="record"
+                Canvas.Left="64"
+                Canvas.Bottom="100"
+                Width="309"
+                Height="100">
+            <Rectangle
+                    Canvas.Top="10"
+                    Width="100"
+                    Height="100">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Label
+                    x:Name="lbRecord"
+                    Canvas.Left="120"
+                    Canvas.Bottom="0"
+                    Content="0"
+                    FontFamily="{StaticResource Police}"
+                    FontSize="48"
+                    Foreground="White"
+                    MouseLeftButtonUp="Quitter" />
+
+        </Canvas>
+    </Canvas>-->
 </Window>

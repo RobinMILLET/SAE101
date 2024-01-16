@@ -8,11 +8,166 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="img\icon_chargement.gif" />
+    <None Remove="img\monde1\fond.png" />
+    <None Remove="img\monde1\obstacles\barque.png" />
+    <None Remove="img\monde1\obstacles\caillou\caillou1.png" />
+    <None Remove="img\monde1\obstacles\caillou\caillou2.png" />
+    <None Remove="img\monde1\obstacles\caillou\caillou3.png" />
+    <None Remove="img\monde1\sol.png" />
+    <None Remove="img\monde2\fond.png" />
+    <None Remove="img\monde2\obstacles\bateau.png" />
+    <None Remove="img\monde2\obstacles\caillou\caillou1.png" />
+    <None Remove="img\monde2\obstacles\caillou\caillou2.png" />
+    <None Remove="img\monde2\obstacles\caillou\caillou3.png" />
+    <None Remove="img\monde2\obstacles\encre.png" />
+    <None Remove="img\monde2\obstacles\oiseau.gif" />
+    <None Remove="img\monde2\sol.png" />
+    <None Remove="img\monde3\fond.png" />
+    <None Remove="img\monde3\obstacles\barque.png" />
+    <None Remove="img\monde3\obstacles\caillou\caillou1.png" />
+    <None Remove="img\monde3\obstacles\caillou\caillou2.png" />
+    <None Remove="img\monde3\obstacles\caillou\caillou3.png" />
+    <None Remove="img\monde3\obstacles\oiseau.gif" />
+    <None Remove="img\monde3\sol.png" />
+    <None Remove="img\monde4\obstacles\coquillage.png" />
+    <None Remove="img\monde4\obstacles\crabe.gif" />
+    <None Remove="img\monde4\obstacles\meduse.gif" />
+    <None Remove="img\monde5\fond_ocean.png" />
+    <None Remove="img\monde5\obstacles\bateau.png" />
+    <None Remove="img\monde6\obstacles\coquillage.png" />
+    <None Remove="img\monde6\obstacles\crabe.gif" />
+    <None Remove="img\monde7\obstacles\caillou\caillou1.png" />
+    <None Remove="img\monde7\obstacles\caillou\caillou2.png" />
+    <None Remove="img\monde7\obstacles\caillou\caillou3.png" />
+    <None Remove="img\monde8\obstacles\caillou\caillou1.png" />
+    <None Remove="img\monde8\obstacles\caillou\caillou2.png" />
+    <None Remove="img\monde8\obstacles\caillou\caillou3.png" />
+    <None Remove="img\poisson.png" />
+    <None Remove="img\record.png" />
+    <None Remove="img\transition.png" />
+    <None Remove="img\vague.png" />
     <None Remove="police\police.ttf" />
-    <None Remove="vague.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="img\icon_chargement.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\fond.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\obstacles\barque.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\obstacles\caillou\caillou1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\obstacles\caillou\caillou2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\obstacles\caillou\caillou3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde1\sol.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\fond.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\bateau.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\caillou\caillou1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\caillou\caillou2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\caillou\caillou3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\encre.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\obstacles\oiseau.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde2\sol.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\fond.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\obstacles\barque.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\obstacles\caillou\caillou1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\obstacles\caillou\caillou2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\obstacles\caillou\caillou3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\obstacles\oiseau.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde3\sol.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde4\obstacles\coquillage.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde4\obstacles\crabe.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde4\obstacles\meduse.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde5\fond_ocean.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde5\obstacles\bateau.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde6\obstacles\coquillage.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde6\obstacles\crabe.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde7\obstacles\caillou\caillou1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde7\obstacles\caillou\caillou2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde7\obstacles\caillou\caillou3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde8\obstacles\caillou\caillou1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde8\obstacles\caillou\caillou2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\monde8\obstacles\caillou\caillou3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\poisson.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\record.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\transition.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\vague.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="police\police.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -20,10 +175,6 @@
 
   <ItemGroup>
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="vague.png" />
   </ItemGroup>
 
 </Project>
