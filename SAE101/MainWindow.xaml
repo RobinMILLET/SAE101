@@ -18,96 +18,185 @@
     <Window.Resources>
         <FontFamily x:Key="Police">/SAE101;component/police/police.ttf#Minecraft</FontFamily>
     </Window.Resources>
-    <Canvas
-        x:Name="Canvas"
-        Focusable="True"
-        KeyDown="ClavierAppui"
-        KeyUp="ClavierRelache">
+    <Grid x:Name="Fenetre" Focusable="True">
         <Canvas
-            x:Name="fond1"
-            Canvas.Left="0"
-            Width="2480"
-            Height="750"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Panel.ZIndex="0" />
-        <Canvas
-            x:Name="fond2"
-            Canvas.Left="2480"
-            Width="2480"
-            Height="750"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Panel.ZIndex="0" />
-        <Label
-            x:Name="lbDistance"
-            Canvas.Left="362"
-            Canvas.Top="10"
-            Width="526"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            Panel.ZIndex="100"
-            Content="0"
-            FontFamily="{StaticResource Police}"
-            FontSize="36"
-            FontWeight="Bold" />
-        <Rectangle
-            x:Name="sol1"
-            Canvas.Left="0"
-            Canvas.Bottom="-20"
-            Width="2480"
-            Height="100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Panel.ZIndex="5" />
-        <Rectangle
-            x:Name="sol2"
-            Canvas.Left="2480"
-            Canvas.Bottom="-20"
-            Width="2480"
-            Height="100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            Panel.ZIndex="5" />
-        <Rectangle
-            x:Name="Joueur"
-            Canvas.Left="250"
-            Canvas.Bottom="355"
-            Width="55"
-            Height="35"
-            Panel.ZIndex="25"
-            RenderTransformOrigin="0.5,0.5">
-            <Rectangle.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform />
-                    <SkewTransform />
-                    <RotateTransform Angle="0" />
-                    <TranslateTransform />
-                </TransformGroup>
-            </Rectangle.RenderTransform>
-        </Rectangle>
-        <Rectangle
-            x:Name="vague1"
-            Canvas.Left="0"
-            Canvas.Bottom="380"
-            Width="2480"
-            Height="30"
-            Panel.ZIndex="100">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="/vague.png" />
-            </Rectangle.Fill>
-        </Rectangle>
-        <Rectangle
-            x:Name="vague2"
-            Canvas.Left="2480"
-            Canvas.Bottom="380"
-            Width="2480"
-            Height="30"
-            Panel.ZIndex="100">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="/vague.png" />
-            </Rectangle.Fill>
-        </Rectangle>
-    </Canvas>
+            x:Name="Canvas"
+            Focusable="True"
+            KeyDown="ClavierAppui"
+            KeyUp="ClavierRelache"
+            Visibility="Hidden">
+            <Rectangle
+                x:Name="fond1"
+                Canvas.Left="0"
+                Width="2480"
+                Height="750"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Panel.ZIndex="0" />
+            <Rectangle
+                x:Name="fond2"
+                Canvas.Left="2480"
+                Width="2480"
+                Height="750"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Panel.ZIndex="0" />
+            <Label
+                x:Name="lbDistance"
+                Canvas.Left="362"
+                Canvas.Top="10"
+                Width="526"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                HorizontalContentAlignment="Center"
+                Panel.ZIndex="100"
+                Content="0"
+                FontFamily="{StaticResource Police}"
+                FontSize="36"
+                FontWeight="Bold" />
+            <Rectangle
+                x:Name="sol1"
+                Canvas.Left="0"
+                Canvas.Bottom="-20"
+                Width="2480"
+                Height="100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Panel.ZIndex="5" />
+            <Rectangle
+                x:Name="sol2"
+                Canvas.Left="2480"
+                Canvas.Bottom="-20"
+                Width="2480"
+                Height="100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Panel.ZIndex="5" />
+            <Rectangle
+                x:Name="Joueur"
+                Canvas.Left="250"
+                Canvas.Bottom="355"
+                Width="55"
+                Height="35"
+                Panel.ZIndex="25"
+                RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform Angle="0" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle
+                x:Name="vague1"
+                Canvas.Left="0"
+                Canvas.Bottom="371"
+                Width="2480"
+                Height="30"
+                Panel.ZIndex="100">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="img/vague.png" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                x:Name="vague2"
+                Canvas.Left="2480"
+                Canvas.Bottom="371"
+                Width="2480"
+                Height="30"
+                Panel.ZIndex="100">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="img/vague.png" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Canvas>
+        <Canvas x:Name="Menu" Visibility="Visible">
+            <Canvas.Background>
+                <ImageBrush ImageSource="/img/monde1/fond.png" Stretch="UniformToFill" />
+            </Canvas.Background>
+            <Rectangle
+                x:Name="solMenu"
+                Canvas.Left="0"
+                Canvas.Bottom="-20"
+                Width="1250"
+                Height="100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/img/monde1/sol.png" Stretch="UniformToFill" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                x:Name="vagueMenu"
+                Canvas.Left="0"
+                Canvas.Bottom="398"
+                Width="1250"
+                Height="30">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="img/vague.png" Stretch="UniformToFill" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Canvas
+                Canvas.Left="-1980"
+                Width="2480"
+                Height="750">
+                <Canvas.Background>
+                    <ImageBrush ImageSource="/img/transition.png" />
+                </Canvas.Background>
+            </Canvas>
+            <Label
+                x:Name="titre"
+                Canvas.Left="40"
+                Canvas.Top="64"
+                Content="FISH"
+                FontFamily="{StaticResource Police}"
+                FontSize="120"
+                Foreground="White" />
+            <Label
+                x:Name="btnJouer"
+                Canvas.Left="64"
+                Canvas.Bottom="350"
+                Content="Jouer"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseLeftButtonUp="Jouer" />
+            <Label
+                x:Name="btnQuitter"
+                Canvas.Left="64"
+                Canvas.Bottom="275"
+                Content="Quitter"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseLeftButtonUp="Quitter" />
+            <Canvas
+                x:Name="record"
+                Canvas.Left="64"
+                Canvas.Bottom="100"
+                Width="309"
+                Height="100">
+                <Rectangle
+                    Canvas.Top="10"
+                    Width="100"
+                    Height="100">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Label
+                    x:Name="lbRecord"
+                    Canvas.Left="120"
+                    Canvas.Bottom="0"
+                    Content="0"
+                    FontFamily="{StaticResource Police}"
+                    FontSize="48"
+                    Foreground="White"
+                    MouseLeftButtonUp="Quitter" />
+
+            </Canvas>
+        </Canvas>
+    </Grid>
 </Window>

@@ -473,7 +473,7 @@ namespace SAE101
             // 0: Fond
             // 1: Sol
             ImageBrush textureFond = texturesDecor[monde - 1, 0];
-            fond1.Background = textureFond; fond2.Background = textureFond;
+            fond1.Fill = textureFond; fond2.Fill = textureFond;
             ImageBrush textureSol = texturesDecor[monde - 1, 1];
             sol1.Fill = textureSol; sol2.Fill = textureSol;
         }
@@ -569,6 +569,17 @@ namespace SAE101
         private void StopTout(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void Quitter(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Jouer(object sender, MouseButtonEventArgs e)
+        {
+            Canvas.Visibility = Visibility.Visible;
+            Menu.Visibility = Visibility.Hidden;
         }
     }
 }
