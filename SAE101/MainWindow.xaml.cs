@@ -33,6 +33,8 @@ namespace SAE101
         
         // Score
         private double score = 0;
+        private int stage = 1;
+        // 1: Menu, 2: Transition, 3: Jeu, 4: Mort, 5: Fin
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -103,7 +105,6 @@ namespace SAE101
         Obstacle caillou;
         Obstacle oiseau;
         private ImageBrush[] textureCaillou = new ImageBrush[3];
-        private BitmapImage[] textureOiseau = new BitmapImage[2];
         private readonly int limiteGauche = -500;
         private int limiteDroite = 1500;
         private readonly (int, int) borneApparition = (2, 5);
@@ -126,7 +127,7 @@ namespace SAE101
         {
             // min Y, max Y, min taille/100, max taille/100, min dx, max dx, min dy/10, max dy/10
             {"barque", new int[8] { 355, 365, 60, 80, -5, 0, 0, 0} },
-            {"bateau", new int[8] { 355, 365, 50, 75, -5, 0, 0, 0} },
+            {"bateau", new int[8] { 358, 368, 50, 75, -5, 0, 0, 0} },
             {"caillou", new int[8] { 25, 25, 50, 100, 0, 0, 0, 0} },
             {"oiseau", new int[8] { 500, 600, 25, 50, -5, 2, -5, 5} },
         };
@@ -194,17 +195,22 @@ namespace SAE101
 #if DEBUG
             chronoDEBUG.Restart();
 #endif
-            score += vitesse / 100;
+            
+            if (stage == 3) score += vitesse / 100;
 
-            DetecteAppui();
-            GereObstacles();
-            PhysiqueJoueur();
-            Collision();
-            Apparition();
+            if (stage != 1)
+            {
+                DetecteAppui();
+                GereObstacles();
+                PhysiqueJoueur();
+                Collision();
+                Apparition();
+            }
 
             if (tick >= tickParImage)
             {
                 tick = 0;
+                if (stage == 2) { Transition2(); }
                 BougerDecor();
                 Affiche();
 #if DEBUG
@@ -524,7 +530,9 @@ namespace SAE101
                     $"tempsExecMoteur(/1) : {FormatDebug(moyenneExec.Last())} ms\n" +
                     $"tempsExecMoteur(/{tailleMoyenneExec}) : {FormatDebug(moyenneExec.Average())} ms\n" +
                     $"elementsCanvas : {Canvas.Children.Count}\n" +
-                    $"estEnCollision : {estEnCollision}\n"
+                    $"estEnCollision : {estEnCollision}\n" +
+                    $"stageDeJeu : {stage}\n" +
+                    $"numeroDeMonde : {monde}\n"
                     ;
             }
         }
@@ -573,15 +581,27 @@ namespace SAE101
             Application.Current.Shutdown();
         }
 
+
         private void Quitter(object sender, MouseButtonEventArgs e)
         {
             this.Close();
         }
 
+
         private void Jouer(object sender, MouseButtonEventArgs e)
         {
-            Canvas.Visibility = Visibility.Visible;
-            // Menu.Visibility = Visibility.Hidden;
+            if (stage == 1) stage = 2;
+        }
+
+
+        private void Transition2()
+        {
+            Menu.Opacity -= 0.01 * tickParImage;
+            if (Menu.Opacity <= 0)
+            {
+                Menu.Visibility = Visibility.Hidden;
+                stage = 3;
+            }
         }
     }
 }
