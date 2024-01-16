@@ -579,7 +579,7 @@ namespace SAE101
         private void Jouer(object sender, MouseButtonEventArgs e)
         {
             Canvas.Visibility = Visibility.Visible;
-            Menu.Visibility = Visibility.Hidden;
+            // Menu.Visibility = Visibility.Hidden;
         }
     }
 }
