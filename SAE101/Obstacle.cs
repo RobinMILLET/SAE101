@@ -225,12 +225,13 @@ namespace SAE101
 
         public void Mouvement(double x)
         {
-            pX += x + this.DX;
-            pY += this.DY;
+            double ratio = x / -10.0;
+            pX += x + this.DX * ratio;
+            pY += this.DY * ratio;
             for (int i = 0; i < Collisions.Length; i++)
             {
-                Collisions[i].X += x + this.DX;
-                Collisions[i].Y += this.DY;
+                Collisions[i].X += x + this.DX * ratio;
+                Collisions[i].Y += this.DY * ratio;
             }
         }
 

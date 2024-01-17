@@ -27,7 +27,7 @@
         <Rectangle
             x:Name="fond1"
             Canvas.Left="0"
-            Width="2480"
+            Width="2481"
             Height="750"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
@@ -35,7 +35,7 @@
         <Rectangle
             x:Name="fond2"
             Canvas.Left="2480"
-            Width="2480"
+            Width="2481"
             Height="750"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -57,7 +57,7 @@
             x:Name="sol1"
             Canvas.Left="0"
             Canvas.Bottom="-20"
-            Width="2480"
+            Width="2481"
             Height="100"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
@@ -66,7 +66,7 @@
             x:Name="sol2"
             Canvas.Left="2480"
             Canvas.Bottom="-20"
-            Width="2480"
+            Width="2481"
             Height="100"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
@@ -92,7 +92,7 @@
             x:Name="vague1"
             Canvas.Left="0"
             Canvas.Bottom="375"
-            Width="2480"
+            Width="2481"
             Height="30"
             Panel.ZIndex="100">
             <Rectangle.Fill>
@@ -103,7 +103,7 @@
             x:Name="vague2"
             Canvas.Left="2480"
             Canvas.Bottom="375"
-            Width="2480"
+            Width="2481"
             Height="30"
             Panel.ZIndex="100">
             <Rectangle.Fill>

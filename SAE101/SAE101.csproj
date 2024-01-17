@@ -8,41 +8,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="img\monde1\**" />
+    <Compile Remove="img\monde2\**" />
+    <Compile Remove="img\monde3\**" />
+    <Compile Remove="img\monde4\**" />
+    <Compile Remove="img\monde5\**" />
+    <Compile Remove="img\monde6\**" />
+    <Compile Remove="img\monde7\**" />
+    <Compile Remove="img\monde8\**" />
+    <EmbeddedResource Remove="img\monde1\**" />
+    <EmbeddedResource Remove="img\monde2\**" />
+    <EmbeddedResource Remove="img\monde3\**" />
+    <EmbeddedResource Remove="img\monde4\**" />
+    <EmbeddedResource Remove="img\monde5\**" />
+    <EmbeddedResource Remove="img\monde6\**" />
+    <EmbeddedResource Remove="img\monde7\**" />
+    <EmbeddedResource Remove="img\monde8\**" />
+    <None Remove="img\monde1\**" />
+    <None Remove="img\monde2\**" />
+    <None Remove="img\monde3\**" />
+    <None Remove="img\monde4\**" />
+    <None Remove="img\monde5\**" />
+    <None Remove="img\monde6\**" />
+    <None Remove="img\monde7\**" />
+    <None Remove="img\monde8\**" />
+    <Page Remove="img\monde1\**" />
+    <Page Remove="img\monde2\**" />
+    <Page Remove="img\monde3\**" />
+    <Page Remove="img\monde4\**" />
+    <Page Remove="img\monde5\**" />
+    <Page Remove="img\monde6\**" />
+    <Page Remove="img\monde7\**" />
+    <Page Remove="img\monde8\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="img\icon_chargement.gif" />
-    <None Remove="img\monde1\fond.png" />
-    <None Remove="img\monde1\obstacles\barque.png" />
-    <None Remove="img\monde1\obstacles\caillou\caillou1.png" />
-    <None Remove="img\monde1\obstacles\caillou\caillou2.png" />
-    <None Remove="img\monde1\obstacles\caillou\caillou3.png" />
-    <None Remove="img\monde1\sol.png" />
-    <None Remove="img\monde2\fond.png" />
-    <None Remove="img\monde2\obstacles\bateau.png" />
-    <None Remove="img\monde2\obstacles\caillou\caillou1.png" />
-    <None Remove="img\monde2\obstacles\caillou\caillou2.png" />
-    <None Remove="img\monde2\obstacles\caillou\caillou3.png" />
-    <None Remove="img\monde2\obstacles\encre.png" />
-    <None Remove="img\monde2\obstacles\oiseau.gif" />
-    <None Remove="img\monde2\sol.png" />
-    <None Remove="img\monde3\fond.png" />
-    <None Remove="img\monde3\obstacles\barque.png" />
-    <None Remove="img\monde3\obstacles\caillou\caillou1.png" />
-    <None Remove="img\monde3\obstacles\caillou\caillou2.png" />
-    <None Remove="img\monde3\obstacles\caillou\caillou3.png" />
-    <None Remove="img\monde3\obstacles\oiseau.gif" />
-    <None Remove="img\monde3\sol.png" />
-    <None Remove="img\monde4\obstacles\coquillage.png" />
-    <None Remove="img\monde4\obstacles\crabe.gif" />
-    <None Remove="img\monde4\obstacles\meduse.gif" />
-    <None Remove="img\monde5\fond_ocean.png" />
-    <None Remove="img\monde5\obstacles\bateau.png" />
-    <None Remove="img\monde6\obstacles\coquillage.png" />
-    <None Remove="img\monde6\obstacles\crabe.gif" />
-    <None Remove="img\monde7\obstacles\caillou\caillou1.png" />
-    <None Remove="img\monde7\obstacles\caillou\caillou2.png" />
-    <None Remove="img\monde7\obstacles\caillou\caillou3.png" />
-    <None Remove="img\monde8\obstacles\caillou\caillou1.png" />
-    <None Remove="img\monde8\obstacles\caillou\caillou2.png" />
-    <None Remove="img\monde8\obstacles\caillou\caillou3.png" />
     <None Remove="img\poisson.png" />
     <None Remove="img\record.png" />
     <None Remove="img\transition.png" />
@@ -52,108 +53,6 @@
 
   <ItemGroup>
     <Content Include="img\icon_chargement.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\fond.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\obstacles\barque.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\obstacles\caillou\caillou1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\obstacles\caillou\caillou2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\obstacles\caillou\caillou3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde1\sol.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\fond.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\bateau.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\caillou\caillou1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\caillou\caillou2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\caillou\caillou3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\encre.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\obstacles\oiseau.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde2\sol.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\fond.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\obstacles\barque.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\obstacles\caillou\caillou1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\obstacles\caillou\caillou2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\obstacles\caillou\caillou3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\obstacles\oiseau.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde3\sol.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde4\obstacles\coquillage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde4\obstacles\crabe.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde4\obstacles\meduse.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde5\fond_ocean.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde5\obstacles\bateau.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde6\obstacles\coquillage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde6\obstacles\crabe.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde7\obstacles\caillou\caillou1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde7\obstacles\caillou\caillou2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde7\obstacles\caillou\caillou3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde8\obstacles\caillou\caillou1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde8\obstacles\caillou\caillou2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="img\monde8\obstacles\caillou\caillou3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\poisson.png">
