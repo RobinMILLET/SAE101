@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="img\coeur.png" />
     <None Remove="img\icon_chargement.gif" />
     <None Remove="img\poisson.png" />
     <None Remove="img\record.png" />
@@ -52,6 +53,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="img\coeur.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="img\icon_chargement.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

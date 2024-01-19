@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:SAE101"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="MainWindow1"
-    Title="NomDuJeu"
+    Title="Fish"
     Width="1250"
     Height="750"
     Closing="StopTout"
@@ -49,6 +49,7 @@
             VerticalAlignment="Center"
             HorizontalContentAlignment="Center"
             Panel.ZIndex="100"
+            Visibility="Hidden"
             Content="0"
             FontFamily="{StaticResource Police}"
             FontSize="36"
@@ -111,6 +112,43 @@
             </Rectangle.Fill>
         </Rectangle>
         <Canvas
+            x:Name="vie"
+            Width="175"
+            Height="45"
+            Canvas.Left="1000"
+            Canvas.Bottom="650"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Visibility="Hidden">
+            <Rectangle
+                x:Name="coeur1"
+                Width="55"
+                Height="45"
+                Canvas.Left="0">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                x:Name="coeur2"
+                Width="55"
+                Height="45"
+                Canvas.Left="65">  
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
+                x:Name="coeur3"
+                Width="55"
+                Height="45"
+                Canvas.Left="130">  
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Canvas>
+        <Canvas
             x:Name="transition"
             Width="2480"
             Height="750"
@@ -147,7 +185,7 @@
                 Foreground="White" />
             <Label
                 x:Name="btnJouer"
-                Margin="75,-100,0,0"
+                Margin="75,-150,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Content="Jouer"
@@ -158,8 +196,20 @@
                 MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Jouer" />
             <Label
+                x:Name="btnParametre"
+                Margin="75,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Options"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
+                MouseLeftButtonUp="Jouer" />
+            <Label
                 x:Name="btnQuitter"
-                Margin="75,100,0,0"
+                Margin="75,150,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Content="Quitter"
@@ -173,11 +223,10 @@
                 x:Name="record"
                 Width="309"
                 Height="100"
-                Margin="75,500,0,0"
+                Margin="75,480,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center">
                 <Rectangle
-                    Canvas.Top="10"
                     Width="100"
                     Height="100">
                     <Rectangle.Fill>
