@@ -110,54 +110,74 @@
                 <ImageBrush ImageSource="img/vague.png" />
             </Rectangle.Fill>
         </Rectangle>
-        <Grid x:Name="Menu" Visibility="Visible" Width="1250" Height="750" Panel.ZIndex="500">
+        <Grid
+            x:Name="Menu"
+            Width="1250"
+            Height="750"
+            Panel.ZIndex="500"
+            Visibility="Visible">
             <Canvas
-            Width="750"
-            Height="750" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="-250,0,0,0">
+                Width="750"
+                Height="750"
+                Margin="-250,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
                 <Canvas.Background>
                     <ImageBrush ImageSource="/img/transition.png" />
                 </Canvas.Background>
             </Canvas>
             <Label
-            x:Name="titre"
-            Content="FISH"
-            FontFamily="{StaticResource Police}"
-            FontSize="120"
-            Foreground="White" Margin="75,75,0,0" VerticalAlignment="Top" />
+                x:Name="titre"
+                Margin="75,75,0,0"
+                VerticalAlignment="Top"
+                Content="FISH"
+                FontFamily="{StaticResource Police}"
+                FontSize="120"
+                Foreground="White" />
             <Label
-            x:Name="btnJouer"
-            Content="Jouer"
-            FontFamily="{StaticResource Police}"
-            FontSize="32"
-            Foreground="White" MouseLeftButtonUp="Jouer" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="75,-100,0,0" />
+                x:Name="btnJouer"
+                Margin="75,-100,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Jouer"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseLeftButtonUp="Jouer" />
             <Label
-            x:Name="btnQuitter"
-            Content="Quitter"
-            FontFamily="{StaticResource Police}"
-            FontSize="32"
-            Foreground="White"
-            MouseLeftButtonUp="Quitter" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="75,100,0,0" />
+                x:Name="btnQuitter"
+                Margin="75,100,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Quitter"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseLeftButtonUp="Quitter" />
             <Canvas
-            x:Name="record"
-            Width="309"
-            Height="100" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="75,500,0,0">
+                x:Name="record"
+                Width="309"
+                Height="100"
+                Margin="75,500,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
                 <Rectangle
-                Canvas.Top="10"
-                Width="100"
-                Height="100">
+                    Canvas.Top="10"
+                    Width="100"
+                    Height="100">
                     <Rectangle.Fill>
                         <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
                     </Rectangle.Fill>
                 </Rectangle>
                 <Label
-                x:Name="lbRecord"
-                Canvas.Left="120"
-                Canvas.Bottom="0"
-                Content="0"
-                FontFamily="{StaticResource Police}"
-                FontSize="48"
-                Foreground="White"
-                MouseLeftButtonUp="Quitter" />
+                    x:Name="lbRecord"
+                    Canvas.Left="120"
+                    Canvas.Bottom="0"
+                    Content="0"
+                    FontFamily="{StaticResource Police}"
+                    FontSize="48"
+                    Foreground="White"
+                    MouseLeftButtonUp="Quitter" />
             </Canvas>
         </Grid>
     </Canvas>
