@@ -98,6 +98,12 @@ namespace SAE101
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
         private ImageBrush[,] texturesDecor;
 
+        // Transition
+        double positionXtransition;
+
+        // Record
+        private int meilleurScore;
+
         // Monde
         private readonly int nbMondes = 3;
         private int monde = 1;
@@ -192,6 +198,9 @@ namespace SAE101
             // Instancier la fenêtre DEBUG
             winDEBUG = new DEBUG();
             winDEBUG.Show();
+
+            // Charger record
+            chargerRecord(dir + "/record.txt");
 #endif
             // Apparence du Joueur
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
@@ -305,6 +314,24 @@ namespace SAE101
             if (moyenneExec.Count > tailleMoyenneExec) moyenneExec.RemoveAt(0);
 #endif
             tick++;
+        }
+
+
+        private void chargerRecord(string cheminFichier)
+        {
+            try
+            {
+                // Ouvrir le fichier en lecture
+                using (StreamReader sr = new StreamReader(cheminFichier))
+                {
+                    meilleurScore = int.Parse(sr.ReadToEnd());
+                }
+                lbRecord.Content = meilleurScore;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Une erreur s'est produite : {e.Message}", "Erreur");
+            }
         }
 
 
@@ -729,6 +756,7 @@ namespace SAE101
                     $"estEnCollision : {estEnCollision}\n" +
                     $"stageDeJeu : {stage}\n" +
                     $"numeroDeMonde : {monde}\n" +
+                    $"transition: {positionXtransition}\n"
                     $"score : {FormatDebug(score)}\n" +
                     $"vie : {vie}\n" +
                     $"invinc : {invincible}\n"
@@ -796,26 +824,21 @@ namespace SAE101
         private void Transition(int sens)
         {
             // Effet de transition
-            Menu.Opacity -= 0.01 * tickParImage * sens;
-
-            if (sens == 1)
+            Menu.Opacity -= 0.1 * tickParImage * sens;
+            if (transition.RenderTransform is TranslateTransform translateTransform)
             {
-                if (scoreAffiche > 0) scoreAffiche *= 0.95;
-                if (Menu.Opacity <= 0)
-                {
-                    // Passage au jeu
-                    Menu.Visibility = Visibility.Hidden;
-                    stage = 3;
-                    vitesse = vitesseInit;
-                    score = 0;
-                    ProchaineApparition();
-                }
-                else
-                {
-                    // Faire passer les obstacles
-                    if (Menu.Opacity >= 0.5) { vitesse += 0.50 * tickParImage; }
-                    else if (vitesse > vitesseInit) { vitesse -= 0.55 * tickParImage; }
-                }
+                translateTransform.X += 20;
+                positionXtransition = translateTransform.X;
+            }
+            else transition.RenderTransform = new TranslateTransform(0, 0);
+
+            if (positionXtransition >= 3200 && sens == 1)
+            {
+                // Passage au jeu
+                Menu.Visibility = Visibility.Hidden;
+                stage = 3;
+                lbDistance.Visibility = Visibility.Visible;
+                vie.Visibility = Visibility.Visible;
             }
             else
             {
@@ -832,6 +855,8 @@ namespace SAE101
                     score = 0;
                     ProchaineApparition();
                 }
+                lbDistance.Visibility = Visibility.Hidden;
+                vie.Visibility = Visibility.Hidden;
             }
         }
 
