@@ -86,6 +86,9 @@ namespace SAE101
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
         private ImageBrush[,] texturesDecor;
 
+        // Transition
+        double positionXtransition;
+
         // Monde
         private readonly int nbMondes = 3;
         private int monde = 1;
@@ -667,7 +670,8 @@ namespace SAE101
                     $"estEnCollision : {estEnCollision}\n" +
                     $"stageDeJeu : {stage}\n" +
                     $"numeroDeMonde : {monde}\n" +
-                    $"score : {FormatDebug(score)}\n"
+                    $"score : {FormatDebug(score)}\n" + 
+                    $"transition: {positionXtransition}\n"
                     ;
             }
         }
@@ -731,13 +735,16 @@ namespace SAE101
 
         private void Transition(int sens)
         {
+            // stage = 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
             score = 0;
             ProchaineApparition();
 
             // Effet de transition
-            Menu.Opacity -= 0.01 * tickParImage * sens;
-
-            if (Menu.Opacity <= 0 && sens == 1)
+            Menu.Opacity -= 0.1 * tickParImage * sens;
+            if (transition.RenderTransform is TranslateTransform translateTransform) translateTransform.X += 20;
+            else transition.RenderTransform = new TranslateTransform(0, 0);
+            positionXtransition = translateTransform.X;
+            if (positionXtransition >= 3200  && sens == 1)
             {
                 // Passage au jeu
                 Menu.Visibility = Visibility.Hidden;
@@ -770,6 +777,18 @@ namespace SAE101
             {
                 prochaineApparition[i] = rd.Next(borneApparition.Item1, borneApparition.Item2) / 10.0 - 2.5;
             }
+        }
+
+        private void SurvolEntrée(object sender, MouseEventArgs e)
+        {
+            if (sender is Label btnJouer) btnJouer.Foreground = new SolidColorBrush(Colors.SkyBlue);
+            else btnQuitter.Foreground = new SolidColorBrush(Colors.SkyBlue);
+        }
+
+        private void SurvolSortie(object sender, MouseEventArgs e)
+        {
+            if (sender is Label btnJouer) btnJouer.Foreground = new SolidColorBrush(Colors.White);
+            else btnQuitter.Foreground = new SolidColorBrush(Colors.White);
         }
     }
 }

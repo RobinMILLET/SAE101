@@ -110,22 +110,33 @@
                 <ImageBrush ImageSource="img/vague.png" />
             </Rectangle.Fill>
         </Rectangle>
+        <Canvas
+            x:Name="transition"
+            Width="2480"
+            Height="750"
+            Margin="-1900,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Panel.ZIndex="101"
+            RenderTransformOrigin="0.5,0.5">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform />
+                    <SkewTransform />
+                    <RotateTransform />
+                    <TranslateTransform X="0" />
+                </TransformGroup>
+            </Canvas.RenderTransform>
+            <Canvas.Background>
+                <ImageBrush ImageSource="/img/transition.png" />
+            </Canvas.Background>
+        </Canvas>
         <Grid
             x:Name="Menu"
             Width="1250"
             Height="750"
             Panel.ZIndex="500"
             Visibility="Visible">
-            <Canvas
-                Width="750"
-                Height="750"
-                Margin="-250,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
-                <Canvas.Background>
-                    <ImageBrush ImageSource="/img/transition.png" />
-                </Canvas.Background>
-            </Canvas>
             <Label
                 x:Name="titre"
                 Margin="75,75,0,0"
@@ -143,6 +154,8 @@
                 FontFamily="{StaticResource Police}"
                 FontSize="32"
                 Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Jouer" />
             <Label
                 x:Name="btnQuitter"
@@ -153,6 +166,8 @@
                 FontFamily="{StaticResource Police}"
                 FontSize="32"
                 Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Quitter" />
             <Canvas
                 x:Name="record"
