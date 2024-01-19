@@ -12,33 +12,28 @@
     Height="750"
     Closing="StopTout"
     FocusManager.FocusedElement="{Binding ElementName=Canvas}"
-    ResizeMode="NoResize"
-    WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d">
+    mc:Ignorable="d" MinWidth="500" MinHeight="300" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" WindowState="Maximized" SizeToContent="Width">
     <Window.Resources>
         <FontFamily x:Key="Police">/SAE101;component/police/police.ttf#Minecraft</FontFamily>
     </Window.Resources>
+    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
     <Canvas
         x:Name="Canvas"
         Focusable="True"
         KeyDown="ClavierAppui"
         KeyUp="ClavierRelache"
-        Visibility="Visible">
+        Visibility="Visible" Width="1250" Height="750" ClipToBounds="True">
         <Rectangle
             x:Name="fond1"
             Canvas.Left="0"
             Width="2481"
-            Height="750"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
+            Height="850"
             Panel.ZIndex="0" />
         <Rectangle
             x:Name="fond2"
             Canvas.Left="2480"
             Width="2481"
-            Height="750"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            Height="850"
             Panel.ZIndex="0" />
         <Label
             x:Name="lbDistance"
@@ -59,8 +54,6 @@
             Canvas.Bottom="-20"
             Width="2481"
             Height="100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
             Panel.ZIndex="5" />
         <Rectangle
             x:Name="sol2"
@@ -68,8 +61,6 @@
             Canvas.Bottom="-20"
             Width="2481"
             Height="100"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
             Panel.ZIndex="5" />
         <Rectangle
             x:Name="Joueur"
@@ -112,16 +103,12 @@
         </Rectangle>
         <Grid
             x:Name="Menu"
-            Width="1250"
-            Height="750"
+            Width="1500"
             Panel.ZIndex="500"
-            Visibility="Visible">
+            Visibility="Visible" ClipToBounds="True" Canvas.Left="0" Canvas.Top="0">
             <Canvas
-                Width="750"
-                Height="750"
-                Margin="-250,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
+                Width="500"
+                Height="750" Margin="-21,0,1021,0">
                 <Canvas.Background>
                     <ImageBrush ImageSource="/img/transition.png" />
                 </Canvas.Background>
@@ -129,26 +116,23 @@
             <Label
                 x:Name="titre"
                 Margin="75,75,0,0"
-                VerticalAlignment="Top"
                 Content="FISH"
                 FontFamily="{StaticResource Police}"
                 FontSize="120"
                 Foreground="White" />
             <Label
                 x:Name="btnJouer"
-                Margin="75,-100,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
+                Margin="75,0,0,366"
                 Content="Jouer"
                 FontFamily="{StaticResource Police}"
                 FontSize="32"
                 Foreground="White"
-                MouseLeftButtonUp="Jouer" />
+                MouseLeftButtonUp="Jouer" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
             <Label
                 x:Name="btnQuitter"
-                Margin="75,100,0,0"
+                Margin="75,0,0,288"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Center"
+                VerticalAlignment="Bottom"
                 Content="Quitter"
                 FontFamily="{StaticResource Police}"
                 FontSize="32"
@@ -164,7 +148,7 @@
                 <Rectangle
                     Canvas.Top="10"
                     Width="100"
-                    Height="100">
+                    Height="100" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                     <Rectangle.Fill>
                         <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
                     </Rectangle.Fill>
@@ -177,8 +161,9 @@
                     FontFamily="{StaticResource Police}"
                     FontSize="48"
                     Foreground="White"
-                    MouseLeftButtonUp="Quitter" />
+                    MouseLeftButtonUp="Quitter" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
             </Canvas>
         </Grid>
     </Canvas>
+    </Viewbox>
 </Window>

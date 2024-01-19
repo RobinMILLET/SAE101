@@ -36,8 +36,10 @@ namespace SAE101
         
         // Score
         private double score = 0;
+        private double scoreAffiche = 0;
         private int stage = 1;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
+        private readonly string fichierScore = "\\score.txt";
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -64,10 +66,12 @@ namespace SAE101
         private readonly double graviteA = 0.2;
         private readonly double graviteV = 0.15;
         private bool vaSplash = false;
-        
+
         // Vitesse X et Parallax
+        private readonly double ratioFenetre = 1250.0 / 750.0;
         private readonly int tailleDecor = 2480;
-        private double vitesse = 5;
+        private readonly double vitesseInit = 7.5;
+        private double vitesse;
         private readonly double vFond = 0.1; // Fond
         private readonly double vSol = 1; // Sol
         private readonly double vVague = 1.25; // Vague
@@ -81,7 +85,15 @@ namespace SAE101
         private readonly double decaleY = 0;
         private bool estEnCollision = false;
         private (double, double) verifCollision = (-250, +50);
-        
+
+        // Vie
+        private readonly int vieMax = 3;
+        private int vie;
+        private readonly int tempsInvincible = 100; // *16ms
+        private int invincible = 0;
+        private readonly int nbFlashInvinc = 5;
+        private int freqFlashInvinc;
+
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
         private ImageBrush[,] texturesDecor;
@@ -152,7 +164,7 @@ namespace SAE101
             {"bateau", new int[8] { 358, 368, 50, 75, -50, 0, 0, 0} },
             {"meduse", new int[8] { 50, 250, 25, 50, -25, 25, -25, 25} },
             {"coquillage", new int[8] { 25, 30, 10, 20, 0, 0, 0, 0} },
-            {"crabe", new int[8] { 20, 30, 10, 35, -25, 25, 0, 0} },
+            {"crabe", new int[8] { 20, 30, 20, 35, -25, 25, 0, 0} },
             {"corail", new int[8] { 20, 30, 15, 30, 0, 0, 0, 0} },
             {"encre", new int[8] { 20, 30, 10, 30, 0, 0, 0, 0} },
             {"caillou", new int[8] { 20, 30, 50, 75, 0, 0, 0, 0} },
@@ -162,10 +174,16 @@ namespace SAE101
 
         public MainWindow()
         {
+            InitializeComponent();
+
             // Répertoire courrant
             dir = AppDomain.CurrentDomain.BaseDirectory;
             dir = dir.Remove(dir.IndexOf("\\bin\\"));
-            InitializeComponent();
+
+            // Score et Vitesse
+            lbRecord.Content = ObtenirScore();
+            vitesse = vitesseInit;
+
 #if DEBUG
             // Créer le rectangle de collision du Joueur
             joueurDebug = new Rectangle() { Width = collision.Width, Height = collision.Height,
@@ -179,6 +197,10 @@ namespace SAE101
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
             Canvas.SetLeft(Joueur, X);
+
+            // Vie
+            vie = vieMax;
+            freqFlashInvinc = tempsInvincible / (2 * nbFlashInvinc);
 
             // Collision
             verifCollision = (verifCollision.Item1 + X, verifCollision.Item2 + X);
@@ -203,11 +225,11 @@ namespace SAE101
                 new Rect[] { new Rect(25, 35, 125, 75) });
 
             barque = ObstacleUsine("barque", "/img/obstacles/surface/barque.png",
-                new Rect[] { new Rect(12, 45, 250, 75),
+                new Rect[] { new Rect(20, 45, 240, 75),
                     new Rect(125, 0, 75, 60)});
 
             bateau = ObstacleUsine("bateau", "/img/obstacles/surface/bateau.png",
-                new Rect[] { new Rect(15, 5, 325, 125),
+                new Rect[] { new Rect(30, 10, 310, 120),
                     new Rect(75, 125, 250, 75)});
 
             meduse = ObstacleUsine("meduse", "/img/obstacles/eau/meduse.gif",
@@ -255,9 +277,10 @@ namespace SAE101
             {
                 vitesse += 0.001;
                 Collision();
+                Danger();
             }
 
-            Apparition();
+            if (stage != 2) Apparition();
 
             score += vitesse / 100;
 
@@ -266,8 +289,10 @@ namespace SAE101
                 tick = 0;
                 if (stage == 2) { Transition(1); }
                 else if (stage == 4) { Transition(-1); }
+
                 BougerDecor();
                 Affiche();
+                AfficheInvinc();
 #if DEBUG
                 CollisionsDebug();
                 AfficheDebug();
@@ -351,7 +376,7 @@ namespace SAE101
             }
             // Stabilisation
             if (vY <= 0 && dansBorne && !boutonActif) { friction += frictionStable; }
-            if (friction < 0) friction = 0; // Pas de friction négative
+            if (friction > 1) friction = 1; // Pas de friction négative
             vY *= 1 - friction;
             aY *= 1 - friction;
             // Limite au sol
@@ -378,6 +403,43 @@ namespace SAE101
             collision.Y = pY + decaleY;
             estEnCollision = obstacles.Any(obst => obst.EstEnCollision(collision, verifCollision));
         }
+
+
+        private void Danger()
+        {
+            if (estEnCollision)
+            {
+#if DEBUG
+                if (winDEBUG.Dieu.IsChecked.GetValueOrDefault(false)) { return; }
+#endif
+                if (invincible == 0)
+                {
+                    vie--;
+                    if (vie > 0) invincible = tempsInvincible;
+                    else
+                    {
+                        stage = 4;
+                        TesterScore();
+                    }
+                    
+                }
+            }
+            if (invincible > 0) invincible--;
+        }
+
+
+        private void AfficheInvinc()
+        {
+            if (invincible % freqFlashInvinc < freqFlashInvinc / 2)
+            {
+                Joueur.Opacity = 1;
+            }
+            else
+            {
+                Joueur.Opacity = 0.5;
+            }
+        }
+
 
 
         private void Apparition()
@@ -449,8 +511,8 @@ namespace SAE101
             rotation = Math.Round( -90 * Math.Atanh(Math.Round(vY, 2) / ratioRotation), 1);
             Joueur.RenderTransform = new RotateTransform(rotation);
             // Score
-            if (stage != 1) { lbDistance.Content = Math.Round(score, 0); }
-            else { lbDistance.Content = 0; }
+            if (stage == 3) { scoreAffiche = score; }
+            lbDistance.Content = Math.Round(scoreAffiche, 0);
             // Obstacle
             foreach (Obstacle obst in obstacles)
             {
@@ -667,7 +729,9 @@ namespace SAE101
                     $"estEnCollision : {estEnCollision}\n" +
                     $"stageDeJeu : {stage}\n" +
                     $"numeroDeMonde : {monde}\n" +
-                    $"score : {FormatDebug(score)}\n"
+                    $"score : {FormatDebug(score)}\n" +
+                    $"vie : {vie}\n" +
+                    $"invinc : {invincible}\n"
                     ;
             }
         }
@@ -731,32 +795,42 @@ namespace SAE101
 
         private void Transition(int sens)
         {
-            score = 0;
-            ProchaineApparition();
-
             // Effet de transition
             Menu.Opacity -= 0.01 * tickParImage * sens;
 
-            if (Menu.Opacity <= 0 && sens == 1)
+            if (sens == 1)
             {
-                // Passage au jeu
-                Menu.Visibility = Visibility.Hidden;
-                stage = 3;
+                if (scoreAffiche > 0) scoreAffiche *= 0.95;
+                if (Menu.Opacity <= 0)
+                {
+                    // Passage au jeu
+                    Menu.Visibility = Visibility.Hidden;
+                    stage = 3;
+                    vitesse = vitesseInit;
+                    score = 0;
+                    ProchaineApparition();
+                }
+                else
+                {
+                    // Faire passer les obstacles
+                    if (Menu.Opacity >= 0.5) { vitesse += 0.50 * tickParImage; }
+                    else if (vitesse > vitesseInit) { vitesse -= 0.55 * tickParImage; }
+                }
             }
             else
             {
-                // Faire passer les obstacles
-                if (Menu.Opacity >= 0.5) { vitesse += 0.5 * tickParImage; }
-                else  if (vitesse > 7.5) { vitesse -= 0.5 * tickParImage; }
-            }
-
-            if (sens == -1)
-            {
                 // Retour au menu
+                if (vitesse > vitesseInit) vitesse *= 0.95;
                 Menu.Visibility = Visibility.Visible;
+      
                 if (Menu.Opacity >= 1)
                 {
+                    // Fin
                     stage = 1;
+                    vie = vieMax;
+                    vitesse = vitesseInit;
+                    score = 0;
+                    ProchaineApparition();
                 }
             }
         }
@@ -770,6 +844,45 @@ namespace SAE101
             {
                 prochaineApparition[i] = rd.Next(borneApparition.Item1, borneApparition.Item2) / 10.0 - 2.5;
             }
+        }
+
+
+        private int ObtenirScore()
+        {
+            if (File.Exists(dir + fichierScore))
+            {
+                return int.Parse(File.ReadAllText(dir + fichierScore));
+            }
+            else return 0;
+        }
+
+
+        private void EcrireScore()
+        {
+            using (StreamWriter fichier = new StreamWriter(dir + fichierScore))
+            {
+                fichier.WriteLine(Math.Round(score, 0));
+            }
+        }
+
+
+        private void TesterScore()
+        {
+            if (score > ObtenirScore())
+            {
+                lbRecord.Content = (int)score;
+                EcrireScore();
+            }
+        }
+
+
+        private void MainWindow1_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double ratio = 1250.0 / 750.0; 
+            double largeur = e.NewSize.Width;
+            double longueur = largeur * ratio;
+            Canvas.Width = largeur;
+            Canvas.Height = longueur;
         }
     }
 }

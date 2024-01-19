@@ -13,5 +13,6 @@
         <CheckBox x:Name="Top" Content="Top" HorizontalAlignment="Left" Margin="10,443,0,0" VerticalAlignment="Top" IsChecked="True" Click="Pin_Click"/>
         <CheckBox x:Name="Col" Content="Col" HorizontalAlignment="Left" Margin="60,443,0,0" VerticalAlignment="Top"/>
         <Label x:Name="Text" Content="DEBUG" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" FontFamily="Consolas" Width="280" FontSize="10"/>
+        <CheckBox x:Name="Dieu" Content="Dieu" HorizontalAlignment="Left" Margin="110,443,0,0" VerticalAlignment="Top" IsChecked="False"/>
     </Grid>
 </Window>
