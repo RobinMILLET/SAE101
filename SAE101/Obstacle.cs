@@ -22,10 +22,12 @@ namespace SAE101
         private Rect[] collisions = new Rect[0];
         private double dX = 0;
         private double dY = 0;
-        private Rectangle[] visuelCollisions = new Rectangle[0];
         private double pX = 0;
         private double pY = 0;
         private string nom = "";
+#if DEBUG
+        private Rectangle[] visuelCollisions = new Rectangle[0];
+#endif
 
         // Constructeurs
 
@@ -146,6 +148,8 @@ namespace SAE101
             }
         }
 
+
+#if DEBUG
         public Rectangle[] VisuelCollisions
         {
             get
@@ -158,6 +162,8 @@ namespace SAE101
                 this.visuelCollisions = value;
             }
         }
+#endif
+
 
         public double PX
         {
@@ -378,14 +384,24 @@ namespace SAE101
             if (!anime) { tailleX = visuel.Width; }
             else tailleX = animation.RenderSize.Width;
             
-            if (PX < canvas.Margin.Left + limite - tailleX)
-            {
-#if DEBUG
-                this.CacheCollisions(canvas);
-#endif
-                return true;
-            }
+            if (PX < canvas.Margin.Left + limite - tailleX) return true;
             return false;
+        }
+
+
+        public void RetireObstacle(Canvas canvas)
+        {
+            if (!Anime)
+            {
+                canvas.Children.Remove(Visuel);
+            }
+            else
+            {
+                canvas.Children.Remove(Animation);
+            }
+#if DEBUG
+            CacheCollisions(canvas);
+#endif
         }
     }
 }

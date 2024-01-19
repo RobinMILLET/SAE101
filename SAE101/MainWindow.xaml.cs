@@ -36,7 +36,6 @@ namespace SAE101
         
         // Score
         private double score = 0;
-        private double scoreAffiche = 0;
         private int stage = 1;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
         private readonly string fichierScore = "\\score.txt";
@@ -68,7 +67,6 @@ namespace SAE101
         private bool vaSplash = false;
 
         // Vitesse X et Parallax
-        private readonly double ratioFenetre = 1250.0 / 750.0;
         private readonly int tailleDecor = 2480;
         private readonly double vitesseInit = 7.5;
         private double vitesse;
@@ -93,6 +91,7 @@ namespace SAE101
         private int invincible = 0;
         private readonly int nbFlashInvinc = 5;
         private int freqFlashInvinc;
+        private Rectangle[] coeurs;
 
         // Images
         private ImageBrush imgJoueur = new ImageBrush(); // Joueur
@@ -198,9 +197,6 @@ namespace SAE101
             // Instancier la fenêtre DEBUG
             winDEBUG = new DEBUG();
             winDEBUG.Show();
-
-            // Charger record
-            chargerRecord(dir + "/record.txt");
 #endif
             // Apparence du Joueur
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
@@ -210,6 +206,7 @@ namespace SAE101
             // Vie
             vie = vieMax;
             freqFlashInvinc = tempsInvincible / (2 * nbFlashInvinc);
+            coeurs = new Rectangle[] { coeur1, coeur2, coeur3 };
 
             // Collision
             verifCollision = (verifCollision.Item1 + X, verifCollision.Item2 + X);
@@ -317,24 +314,6 @@ namespace SAE101
         }
 
 
-        private void chargerRecord(string cheminFichier)
-        {
-            try
-            {
-                // Ouvrir le fichier en lecture
-                using (StreamReader sr = new StreamReader(cheminFichier))
-                {
-                    meilleurScore = int.Parse(sr.ReadToEnd());
-                }
-                lbRecord.Content = meilleurScore;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"Une erreur s'est produite : {e.Message}", "Erreur");
-            }
-        }
-
-
         private void DetecteAppui()
         {
             if (toutBoutonEnfonce.Any(x => x))
@@ -358,16 +337,9 @@ namespace SAE101
 
                 // Tester pour les supprimer
                 if (obstacles[nObstacle].Sorti(Canvas, limiteGauche))
-                {  
+                {
                     // Retirer de l'écran
-                    if (!obstacles[nObstacle].Anime)
-                    {
-                        Canvas.Children.Remove(obstacles[nObstacle].Visuel);
-                    }
-                    else
-                    {
-                        Canvas.Children.Remove(obstacles[nObstacle].Animation);
-                    }
+                    obstacles[nObstacle].RetireObstacle(Canvas);
                     obstacles.RemoveAt(nObstacle);
                 }
                 else nObstacle++;
@@ -442,11 +414,12 @@ namespace SAE101
                 if (invincible == 0)
                 {
                     vie--;
+                    AfficheVie();
                     if (vie > 0) invincible = tempsInvincible;
                     else
                     {
-                        stage = 4;
                         TesterScore();
+                        stage = 4;
                     }
                     
                 }
@@ -538,8 +511,7 @@ namespace SAE101
             rotation = Math.Round( -90 * Math.Atanh(Math.Round(vY, 2) / ratioRotation), 1);
             Joueur.RenderTransform = new RotateTransform(rotation);
             // Score
-            if (stage == 3) { scoreAffiche = score; }
-            lbDistance.Content = Math.Round(scoreAffiche, 0);
+            if (stage == 2 || stage == 3) lbDistance.Content = Math.Round(score, 0);
             // Obstacle
             foreach (Obstacle obst in obstacles)
             {
@@ -756,7 +728,7 @@ namespace SAE101
                     $"estEnCollision : {estEnCollision}\n" +
                     $"stageDeJeu : {stage}\n" +
                     $"numeroDeMonde : {monde}\n" +
-                    $"transition: {positionXtransition}\n"
+                    $"transition: {positionXtransition}\n" +
                     $"score : {FormatDebug(score)}\n" +
                     $"vie : {vie}\n" +
                     $"invinc : {invincible}\n"
@@ -827,42 +799,52 @@ namespace SAE101
             Menu.Opacity -= 0.1 * tickParImage * sens;
             if (transition.RenderTransform is TranslateTransform translateTransform)
             {
-                translateTransform.X += 20;
+                translateTransform.X += 20 * sens;
                 positionXtransition = translateTransform.X;
             }
             else transition.RenderTransform = new TranslateTransform(0, 0);
 
-            if (positionXtransition >= 3200 && sens == 1)
+            if (sens == 1)
             {
-                // Passage au jeu
-                Menu.Visibility = Visibility.Hidden;
-                stage = 3;
-                lbDistance.Visibility = Visibility.Visible;
-                vie.Visibility = Visibility.Visible;
+                if (positionXtransition >= 1000)
+                {
+                    obstacles.ForEach(obstacle => obstacle.RetireObstacle(Canvas));
+                    obstacles.Clear();
+                    lbDistance.Visibility = Visibility.Visible;
+                    vitesse = vitesseInit;
+                    vie = vieMax;
+                    Vie.Visibility = Visibility.Visible;
+                    AfficheVie();
+                    score = 0;
+                    if (positionXtransition >= 3300)
+                    {
+                        Menu.Visibility = Visibility.Hidden;
+                        ProchaineApparition();
+                        stage = 3;
+                    }
+                }
             }
             else
             {
-                // Retour au menu
-                if (vitesse > vitesseInit) vitesse *= 0.95;
-                Menu.Visibility = Visibility.Visible;
-      
-                if (Menu.Opacity >= 1)
+                if (positionXtransition <= 1000)
                 {
-                    // Fin
-                    stage = 1;
-                    vie = vieMax;
+                    Menu.Visibility = Visibility.Visible;
+                    Vie.Visibility = Visibility.Hidden;
+                    lbDistance.Visibility = Visibility.Hidden;
                     vitesse = vitesseInit;
-                    score = 0;
                     ProchaineApparition();
+                    if (positionXtransition <= 0)
+                    {
+                        stage = 1;
+                    }
                 }
-                lbDistance.Visibility = Visibility.Hidden;
-                vie.Visibility = Visibility.Hidden;
             }
         }
 
 
         private void ProchaineApparition()
         {
+            score = 0;
             Random rd = new Random();
             prochaineApparition = new double[4];
             for (int i = 0; i < 4; i++) 
@@ -901,6 +883,22 @@ namespace SAE101
         }
 
 
+        private void AfficheVie()
+        {
+            for (int i = 0 ; i < coeurs.Length ; i++)
+            {
+                if (vie < vieMax-i)
+                {
+                    coeurs[i].Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    coeurs[i].Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+
         private void MainWindow1_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             double ratio = 1250.0 / 750.0; 
@@ -909,5 +907,19 @@ namespace SAE101
             Canvas.Width = largeur;
             Canvas.Height = longueur;
         }
+
+
+        private void SurvolEntrée(object sender, MouseEventArgs e)
+        {
+            if (sender is Label btn) btn.Foreground = new SolidColorBrush(Colors.SkyBlue);
+        }
+
+
+        private void SurvolSortie(object sender, MouseEventArgs e)
+        {
+            if (sender is Label btn) btn.Foreground = new SolidColorBrush(Colors.White);
+        }
+
+
     }
 }

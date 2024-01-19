@@ -103,7 +103,7 @@
             </Rectangle.Fill>
         </Rectangle>
         <Canvas
-            x:Name="vie"
+            x:Name="Vie"
             Width="175"
             Height="45"
             Canvas.Left="1000"
@@ -188,7 +188,6 @@
                 FontFamily="{StaticResource Police}"
                 FontSize="32"
                 Foreground="White"
-                MouseLeftButtonUp="Jouer" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                 MouseEnter="SurvolEntrée"
                 MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Jouer" />
@@ -202,8 +201,7 @@
                 FontSize="32"
                 Foreground="White"
                 MouseEnter="SurvolEntrée"
-                MouseLeave="SurvolSortie"
-                MouseLeftButtonUp="Jouer" />
+                MouseLeave="SurvolSortie" />
             <Label
                 x:Name="btnQuitter"
                 Margin="75,150,0,0"
