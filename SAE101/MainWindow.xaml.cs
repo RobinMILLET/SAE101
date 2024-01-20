@@ -33,7 +33,11 @@ namespace SAE101
         
         // Personnalisable par l'utilisateur
         private Key[] boutonsValides = new Key[6] { Key.Z, Key.W, Key.Up, Key.Down, Key.Space, Key.Enter };
-        
+
+        // Options
+        Window options;
+        private bool montreOption = false;
+
         // Score
         private double score = 0;
         private int stage = 1;
@@ -76,7 +80,7 @@ namespace SAE101
         private (UIElement, double)[] elements;
         
         // Joueur
-        private int ratioRotation = 50; // Change selon vitesse de scroll (50:lent ; 75:moyen ; 100:rapide ...)
+        private readonly int ratioRotation = 50;
         private double rotation;
         private Rect collision = new Rect() { Width = 35, Height = 35 };
         private readonly double decaleX = 15;
@@ -99,9 +103,6 @@ namespace SAE101
 
         // Transition
         double positionXtransition;
-
-        // Record
-        private int meilleurScore;
 
         // Monde
         private readonly int nbMondes = 3;
@@ -278,7 +279,6 @@ namespace SAE101
  
             GereObstacles();
             PhysiqueJoueur();
-
             if (stage == 3)
             {
                 vitesse += 0.001;
@@ -789,7 +789,7 @@ namespace SAE101
 
         private void Jouer(object sender, MouseButtonEventArgs e)
         {
-            if (stage == 1) stage = 2;
+            if (stage == 1 && !montreOption) stage = 2;
         }
 
 
@@ -799,7 +799,7 @@ namespace SAE101
             Menu.Opacity -= 0.1 * tickParImage * sens;
             if (transition.RenderTransform is TranslateTransform translateTransform)
             {
-                translateTransform.X += 20 * sens;
+                translateTransform.X += 20 * sens * tickParImage;
                 positionXtransition = translateTransform.X;
             }
             else transition.RenderTransform = new TranslateTransform(0, 0);
@@ -920,6 +920,20 @@ namespace SAE101
             if (sender is Label btn) btn.Foreground = new SolidColorBrush(Colors.White);
         }
 
-
+        private void MontrerOptions(object sender, MouseButtonEventArgs e)
+        {
+            if (montreOption)
+            {
+                options.Close();
+                montreOption = false;
+            }
+            else
+            {
+                options = new Options();
+                options.Show();
+                options.Owner = this;
+                montreOption = true;
+            }
+        }
     }
 }

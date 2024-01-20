@@ -201,7 +201,7 @@
                 FontSize="32"
                 Foreground="White"
                 MouseEnter="SurvolEntrée"
-                MouseLeave="SurvolSortie" />
+                MouseLeave="SurvolSortie" MouseLeftButtonUp="MontrerOptions" />
             <Label
                 x:Name="btnQuitter"
                 Margin="75,150,0,0"
