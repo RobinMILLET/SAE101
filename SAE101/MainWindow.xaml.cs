@@ -30,19 +30,21 @@ namespace SAE101
         // Gestion boutons
         private bool boutonActif = false;
         private bool[] toutBoutonEnfonce = new bool[6] {false, false, false, false, false, false };
-        
-        // Personnalisable par l'utilisateur
         private Key[] boutonsValides = new Key[6] { Key.Z, Key.W, Key.Up, Key.Down, Key.Space, Key.Enter };
-
+        
         // Options
-        Window options;
-        private bool montreOption = false;
+        private Options options;
+        private bool btnUtilise = false;
+        private bool btnAppui = false;
+        private Key btnPerso = Key.None;
+        private RadioButton[] paramsIPS;
+        private readonly string fichierIPS = "/ips.txt";
 
         // Score
         private double score = 0;
         private int stage = 1;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
-        private readonly string fichierScore = "\\score.txt";
+        private readonly string fichierScore = "/score.txt";
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -186,8 +188,10 @@ namespace SAE101
             dir = AppDomain.CurrentDomain.BaseDirectory;
             dir = dir.Remove(dir.IndexOf("\\bin\\"));
 
+            tickParImage = Obtenir(fichierIPS) + 1;
+
             // Score et Vitesse
-            lbRecord.Content = ObtenirScore();
+            lbRecord.Content = Obtenir(fichierScore);
             vitesse = vitesseInit;
 
 #if DEBUG
@@ -199,6 +203,7 @@ namespace SAE101
             winDEBUG = new DEBUG();
             winDEBUG.Show();
 #endif
+
             // Apparence du Joueur
             imgJoueur.ImageSource = new BitmapImage(new Uri(dir + "/img/poisson.png"));
             Joueur.Fill = imgJoueur;
@@ -287,6 +292,7 @@ namespace SAE101
             }
 
             if (stage != 2) Apparition();
+            if (stage == 1) ReinitScore();
 
             score += vitesse / 100;
 
@@ -316,7 +322,7 @@ namespace SAE101
 
         private void DetecteAppui()
         {
-            if (toutBoutonEnfonce.Any(x => x))
+            if (toutBoutonEnfonce.Any(x => x) || btnAppui)
             {
                 boutonActif = true;
             }
@@ -731,7 +737,9 @@ namespace SAE101
                     $"transition: {positionXtransition}\n" +
                     $"score : {FormatDebug(score)}\n" +
                     $"vie : {vie}\n" +
-                    $"invinc : {invincible}\n"
+                    $"invinc : {invincible}\n" +
+                    $"btnPerso : {btnUtilise} -> {btnPerso}\n" +
+                    $"IPScalcul : {60 / tickParImage}"
                     ;
             }
         }
@@ -753,6 +761,10 @@ namespace SAE101
                     toutBoutonEnfonce[i] = true;
                 }
             }
+            if (btnUtilise && e.Key == btnPerso)
+            {
+                btnAppui = true;
+            }
 #if DEBUG
             // Commandes
             if (e.Key == Key.NumPad0) { ApparitionFond(); }
@@ -772,6 +784,10 @@ namespace SAE101
                     toutBoutonEnfonce[i] = false;
                 }
             }
+            if (btnUtilise && e.Key == btnPerso)
+            {
+                btnAppui = false;
+            }
         }
 
 
@@ -789,14 +805,35 @@ namespace SAE101
 
         private void Jouer(object sender, MouseButtonEventArgs e)
         {
-            if (stage == 1 && !montreOption) stage = 2;
+            if (options != null)
+            {
+                string contenu = options.BtnPerso.Content.ToString();
+                if ( contenu == "..." || contenu == "-")
+                {
+                    btnUtilise = false;
+                }
+                else
+                {
+                    object temp;
+                    btnUtilise = Enum.TryParse(typeof(Key), contenu, out temp);
+                    if (temp != null) btnPerso = (Key)temp;
+                }
+                for (int i = 0; i < paramsIPS.Length; i++)
+                {
+                    if (paramsIPS[i].IsChecked == true)
+                    {
+                        tickParImage = i + 1; break;
+                    }
+                }
+                options.BtnReinitScore.IsEnabled = true;
+            }
+            if (stage == 1 && (options == null || options.Visibility == Visibility.Hidden)) stage = 2;
         }
 
 
         private void Transition(int sens)
         {
             // Effet de transition
-            Menu.Opacity -= 0.1 * tickParImage * sens;
             if (transition.RenderTransform is TranslateTransform translateTransform)
             {
                 translateTransform.X += 20 * sens * tickParImage;
@@ -806,6 +843,8 @@ namespace SAE101
 
             if (sens == 1)
             {
+                Menu.Opacity -= 0.05 * tickParImage;
+
                 if (positionXtransition >= 1000)
                 {
                     obstacles.ForEach(obstacle => obstacle.RetireObstacle(Canvas));
@@ -821,6 +860,7 @@ namespace SAE101
                         Menu.Visibility = Visibility.Hidden;
                         ProchaineApparition();
                         stage = 3;
+                        Menu.Opacity = 0;
                     }
                 }
             }
@@ -828,14 +868,19 @@ namespace SAE101
             {
                 if (positionXtransition <= 1000)
                 {
-                    Menu.Visibility = Visibility.Visible;
                     Vie.Visibility = Visibility.Hidden;
                     lbDistance.Visibility = Visibility.Hidden;
                     vitesse = vitesseInit;
                     ProchaineApparition();
-                    if (positionXtransition <= 0)
+                    if (positionXtransition <= 500)
                     {
-                        stage = 1;
+                        Menu.Opacity += 0.05 * tickParImage;
+                        Menu.Visibility = Visibility.Visible;
+                        if (positionXtransition <= 0)
+                        {
+                            stage = 1;
+                            Menu.Opacity = 1;
+                        }
                     }
                 }
             }
@@ -854,31 +899,32 @@ namespace SAE101
         }
 
 
-        private int ObtenirScore()
+        private int Obtenir(string fichier)
         {
-            if (File.Exists(dir + fichierScore))
+            int sortie = 0;
+            if (File.Exists(dir + fichier))
             {
-                return int.Parse(File.ReadAllText(dir + fichierScore));
+                int.TryParse(File.ReadAllText(dir + fichier), out sortie);
             }
-            else return 0;
+            return sortie;
         }
 
 
-        private void EcrireScore()
+        private void EcrireScore(string fichier, string txt)
         {
-            using (StreamWriter fichier = new StreamWriter(dir + fichierScore))
+            using (StreamWriter document = new StreamWriter(dir + fichier))
             {
-                fichier.WriteLine(Math.Round(score, 0));
+                document.WriteLine(txt);
             }
         }
 
 
         private void TesterScore()
         {
-            if (score > ObtenirScore())
+            if (score > Obtenir(fichierScore))
             {
                 lbRecord.Content = (int)score;
-                EcrireScore();
+                EcrireScore(fichierScore, ((int)Math.Round(score, 0)).ToString());
             }
         }
 
@@ -919,20 +965,36 @@ namespace SAE101
         {
             if (sender is Label btn) btn.Foreground = new SolidColorBrush(Colors.White);
         }
+        
 
         private void MontrerOptions(object sender, MouseButtonEventArgs e)
         {
-            if (montreOption)
+            if (stage != 1) return;
+            if (options == null)
             {
-                options.Close();
-                montreOption = false;
+                options = new Options();
+                paramsIPS = new RadioButton[6] { options.IPS60, options.IPS30, options.IPS20, options.IPS15, options.IPS12, options.IPS10 };
+                options.Show();
+            }
+            else if (options.Visibility == Visibility.Visible)
+            {
+                options.Visibility = Visibility.Hidden;
             }
             else
             {
-                options = new Options();
-                options.Show();
-                options.Owner = this;
-                montreOption = true;
+                options.Visibility= Visibility.Visible;
+            }
+        }
+
+
+        private void ReinitScore()
+        {
+            if (options != null && lbRecord.Content.ToString() != "0")
+            {
+                if (options.BtnReinitScore.IsEnabled == false)
+                {
+                    lbRecord.Content = "0";
+                }
             }
         }
     }
