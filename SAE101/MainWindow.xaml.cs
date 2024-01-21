@@ -107,8 +107,10 @@ namespace SAE101
         double positionXtransition;
 
         // Monde
-        private readonly int nbMondes = 3;
+        private readonly int nbMondes = 4;
         private int monde = 1;
+        private int iconeMondeMenu = 1;
+        private ImageBrush iconeMonde = new ImageBrush();
 
         // Variables pour le DEBUG
         private string dir;
@@ -996,6 +998,41 @@ namespace SAE101
                     lbRecord.Content = "0";
                 }
             }
+        }
+
+        private void MenuMonde(object sender, MouseButtonEventArgs e)
+        {
+            Menu.Visibility = Visibility.Hidden;
+            menuMonde.Visibility = Visibility.Visible;
+        }
+
+        private void MondeSuivant(object sender, MouseButtonEventArgs e)
+        {
+            iconeMondeMenu++;
+            if (iconeMondeMenu == nbMondes) lbMondeSuivant.Visibility = Visibility.Hidden;
+            lbMondePrécédent.Visibility = Visibility.Visible;
+            AffichageIconeMonde();
+        }
+
+        private void MondePrécédent(object sender, MouseButtonEventArgs e)
+        {
+            iconeMondeMenu--;
+            if (iconeMondeMenu == 1) lbMondePrécédent.Visibility = Visibility.Hidden;
+            lbMondeSuivant.Visibility = Visibility.Visible;
+            AffichageIconeMonde();
+        }
+        private void AffichageIconeMonde()
+        {
+            iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+            IconeMonde.Background = iconeMonde;
+            lbMonde.Content = $"Monde {iconeMondeMenu}";
+        }
+
+        private void ConfirmerMonde(object sender, MouseButtonEventArgs e)
+        {
+            monde = iconeMondeMenu;
+            menuMonde.Visibility = Visibility.Hidden;
+            Menu.Visibility = Visibility.Visible;
         }
     }
 }

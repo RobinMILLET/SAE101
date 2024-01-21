@@ -17,25 +17,25 @@
         <FontFamily x:Key="Police">/SAE101;component/police/police.ttf#Minecraft</FontFamily>
     </Window.Resources>
     <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
-    <Canvas
+        <Canvas
         x:Name="Canvas"
         Focusable="True"
         KeyDown="ClavierAppui"
         KeyUp="ClavierRelache"
         Visibility="Visible" Width="1250" Height="750" ClipToBounds="True">
-        <Rectangle
+            <Rectangle
             x:Name="fond1"
             Canvas.Left="0"
             Width="2481"
             Height="850"
             Panel.ZIndex="0" />
-        <Rectangle
+            <Rectangle
             x:Name="fond2"
             Canvas.Left="2480"
             Width="2481"
             Height="850"
             Panel.ZIndex="0" />
-        <Label
+            <Label
             x:Name="lbDistance"
             Canvas.Left="362"
             Canvas.Top="10"
@@ -49,21 +49,21 @@
             FontFamily="{StaticResource Police}"
             FontSize="36"
             FontWeight="Bold" />
-        <Rectangle
+            <Rectangle
             x:Name="sol1"
             Canvas.Left="0"
             Canvas.Bottom="-20"
             Width="2481"
             Height="100"
             Panel.ZIndex="5" />
-        <Rectangle
+            <Rectangle
             x:Name="sol2"
             Canvas.Left="2480"
             Canvas.Bottom="-20"
             Width="2481"
             Height="100"
             Panel.ZIndex="5" />
-        <Rectangle
+            <Rectangle
             x:Name="Joueur"
             Canvas.Left="250"
             Canvas.Bottom="355"
@@ -71,38 +71,38 @@
             Height="35"
             Panel.ZIndex="25"
             RenderTransformOrigin="0.5,0.5">
-            <Rectangle.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform />
-                    <SkewTransform />
-                    <RotateTransform Angle="0" />
-                    <TranslateTransform />
-                </TransformGroup>
-            </Rectangle.RenderTransform>
-        </Rectangle>
-        <Rectangle
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform Angle="0" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <Rectangle
             x:Name="vague1"
             Canvas.Left="0"
             Canvas.Bottom="375"
             Width="2481"
             Height="30"
             Panel.ZIndex="100">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="img/vague.png" />
-            </Rectangle.Fill>
-        </Rectangle>
-        <Rectangle
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="img/vague.png" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle
             x:Name="vague2"
             Canvas.Left="2480"
             Canvas.Bottom="375"
             Width="2481"
             Height="30"
             Panel.ZIndex="100">
-            <Rectangle.Fill>
-                <ImageBrush ImageSource="img/vague.png" />
-            </Rectangle.Fill>
-        </Rectangle>
-        <Canvas
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="img/vague.png" />
+                </Rectangle.Fill>
+            </Rectangle>
+            <Canvas
             x:Name="Vie"
             Width="175"
             Height="45"
@@ -111,35 +111,35 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
             Visibility="Hidden">
-            <Rectangle
+                <Rectangle
                 x:Name="coeur1"
                 Width="55"
                 Height="45"
                 Canvas.Left="0">
-                <Rectangle.Fill>
-                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
-                </Rectangle.Fill>
-            </Rectangle>
-            <Rectangle
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Rectangle
                 x:Name="coeur2"
                 Width="55"
                 Height="45"
-                Canvas.Left="65">  
-                <Rectangle.Fill>
-                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
-                </Rectangle.Fill>
-            </Rectangle>
-            <Rectangle
+                Canvas.Left="65">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Rectangle
                 x:Name="coeur3"
                 Width="55"
                 Height="45"
-                Canvas.Left="130">  
-                <Rectangle.Fill>
-                    <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
-                </Rectangle.Fill>
-            </Rectangle>
-        </Canvas>
-        <Canvas
+                Canvas.Left="130">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="/img/coeur.png" Stretch="Fill" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Canvas>
+            <Canvas
             x:Name="transition"
             Width="2480"
             Height="750"
@@ -148,38 +148,38 @@
             VerticalAlignment="Center"
             Panel.ZIndex="101"
             RenderTransformOrigin="0.5,0.5">
-            <Canvas.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform />
-                    <SkewTransform />
-                    <RotateTransform />
-                    <TranslateTransform X="0" />
-                </TransformGroup>
-            </Canvas.RenderTransform>
-            <Canvas.Background>
-                <ImageBrush ImageSource="/img/transition.png" />
-            </Canvas.Background>
-        </Canvas>
-        <Grid
-            x:Name="Menu"
-            Width="1500"
-            Panel.ZIndex="500"
-            Visibility="Visible" ClipToBounds="True" Canvas.Left="0" Canvas.Top="0">
-            <Canvas
-                Width="500"
-                Height="750" Margin="-21,0,1021,0">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform />
+                        <TranslateTransform X="0" />
+                    </TransformGroup>
+                </Canvas.RenderTransform>
                 <Canvas.Background>
                     <ImageBrush ImageSource="/img/transition.png" />
                 </Canvas.Background>
             </Canvas>
-            <Label
+            <Grid
+            x:Name="Menu"
+            Width="1500"
+            Panel.ZIndex="105"
+            Visibility="Visible" ClipToBounds="True" Canvas.Left="0" Canvas.Top="0">
+                <Canvas
+                Width="500"
+                Height="750" Margin="-21,0,1021,0">
+                    <Canvas.Background>
+                        <ImageBrush ImageSource="/img/transition.png" />
+                    </Canvas.Background>
+                </Canvas>
+                <Label
                 x:Name="titre"
                 Margin="75,75,0,0"
                 Content="FISH"
                 FontFamily="{StaticResource Police}"
                 FontSize="120"
                 Foreground="White" />
-            <Label
+                <Label
                 x:Name="btnJouer"
                 Margin="75,-150,0,0"
                 HorizontalAlignment="Left"
@@ -191,9 +191,20 @@
                 MouseEnter="SurvolEntrée"
                 MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Jouer" />
-            <Label
-                x:Name="btnParametre"
+                <Label
+                x:Name="btnMonde"
                 Margin="75,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Mondes"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie" MouseLeftButtonUp="MenuMonde" />
+                <Label
+                x:Name="btnParametre"
+                Margin="75,150,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Content="Options"
@@ -202,9 +213,9 @@
                 Foreground="White"
                 MouseEnter="SurvolEntrée"
                 MouseLeave="SurvolSortie" MouseLeftButtonUp="MontrerOptions" />
-            <Label
+                <Label
                 x:Name="btnQuitter"
-                Margin="75,150,0,0"
+                Margin="75,0,0,80"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Content="Quitter"
@@ -214,21 +225,21 @@
                 MouseEnter="SurvolEntrée"
                 MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="Quitter" />
-            <Canvas
+                <Canvas
                 x:Name="record"
                 Width="309"
                 Height="100"
-                Margin="75,480,0,0"
+                Margin="75,350,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center">
-                <Rectangle
+                    <Rectangle
                     Width="100"
                     Height="100" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                    <Rectangle.Fill>
-                        <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
-                    </Rectangle.Fill>
-                </Rectangle>
-                <Label
+                        <Rectangle.Fill>
+                            <ImageBrush ImageSource="/img/record.png" Stretch="UniformToFill" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Label
                     x:Name="lbRecord"
                     Canvas.Left="120"
                     Canvas.Bottom="0"
@@ -237,8 +248,65 @@
                     FontSize="48"
                     Foreground="White"
                     MouseLeftButtonUp="Quitter" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-            </Canvas>
-        </Grid>
-    </Canvas>
+                </Canvas>
+            </Grid>
+            <Grid x:Name="menuMonde" Height="750" Width="580" Panel.ZIndex="105" Visibility="Hidden" >
+                <Canvas x:Name="IconeMonde" Height="200" Width="200" Panel.ZIndex="106" Margin="150,200,190,305">
+                    <Canvas.Background>
+                        <ImageBrush ImageSource="/img/iconesMondes/monde1.png"/>
+                    </Canvas.Background>
+                </Canvas>
+                <Label
+                x:Name="lbMonde"
+                Margin="-40,450,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content="Monde 1"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White" >
+                </Label>
+                <Label
+                x:Name="lbMondeSuivant"
+                Margin="380,450,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Content=">"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
+                MouseLeftButtonUp="MondeSuivant" >
+                </Label>
+                <Label
+                x:Name="lbMondePrécédent"
+                Margin="130,450,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Content="&lt;"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                Visibility="Hidden"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
+                MouseLeftButtonUp="MondePrécédent" >
+                </Label>
+                <Label
+                x:Name="lbConfirmerMonde"
+                Margin="-40,550,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content="Ok"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie"
+                MouseLeftButtonUp="ConfirmerMonde" >
+                </Label>
+            </Grid>
+        </Canvas>
     </Viewbox>
 </Window>

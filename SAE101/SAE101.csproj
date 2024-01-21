@@ -44,11 +44,16 @@
 
   <ItemGroup>
     <None Remove="img\coeur.png" />
-    <None Remove="img\icon_chargement.gif" />
+    <None Remove="img\iconesMondes\monde1.png" />
+    <None Remove="img\iconesMondes\monde2.png" />
+    <None Remove="img\iconesMondes\monde3.png" />
+    <None Remove="img\iconesMondes\monde4.png" />
+    <None Remove="img\iconesMondes\mondeBloque.png" />
     <None Remove="img\poisson.png" />
     <None Remove="img\record.png" />
     <None Remove="img\transition.png" />
     <None Remove="img\vague.png" />
+    <None Remove="mondeBloque.png" />
     <None Remove="police\police.ttf" />
   </ItemGroup>
 
@@ -56,7 +61,19 @@
     <Content Include="img\coeur.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="img\icon_chargement.gif">
+    <Content Include="img\iconesMondes\monde1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\iconesMondes\monde2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\iconesMondes\monde3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\iconesMondes\monde4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\iconesMondes\mondeBloque.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\poisson.png">
@@ -81,16 +98,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="mondeBloque.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="img\mondes\monde1\fond.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="img\mondes\monde1\sol.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="img\mondes\monde2\fond.png">
+    <None Update="img\mondes\monde4\fond.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="img\mondes\monde2\sol.png">
+    <None Update="img\mondes\monde4\sol.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="img\mondes\monde3\fond.png">
