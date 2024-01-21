@@ -110,7 +110,7 @@ namespace SAE101
         private readonly int nbMondes = 4;
         private int monde = 1;
         private int iconeMondeMenu = 1;
-        private ImageBrush iconeMonde = new ImageBrush();
+        private ImageBrush[] iconesMonde;
 
         // Variables pour le DEBUG
         private string dir;
@@ -218,6 +218,7 @@ namespace SAE101
 
             // Collision
             verifCollision = (verifCollision.Item1 + X, verifCollision.Item2 + X);
+            iconesMonde = new ImageBrush[nbMondes + 1];
 
             // Préparation du Décor
             elements = new (UIElement, double)[]
@@ -676,6 +677,13 @@ namespace SAE101
             {
                 textureCorail[i] = ObtenirPNG($"/img/obstacles/fond/corail/corail{i + 1}.png");
             }
+
+            // Icones
+            iconesMonde[0] = ObtenirPNG("/img/iconesMondes/mondeBloque.png");
+            for (int i = 1; i <= nbMondes; i++)
+            {
+                iconesMonde[i] = ObtenirPNG($"/img/iconesMondes/monde{i}.png");
+            }
         }
 
 
@@ -1038,8 +1046,7 @@ namespace SAE101
 
         private void AffichageIconeMonde()
         {
-            iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
-            IconeMonde.Background = iconeMonde;
+            IconeMonde.Background = iconesMonde[iconeMondeMenu];
             lbMonde.Content = $"Monde {iconeMondeMenu}";
         }
 
