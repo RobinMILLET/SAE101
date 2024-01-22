@@ -53,9 +53,18 @@ namespace SAE101
         {
             if (attendBouton)
             {
-                BtnPerso.Content = e.Key.ToString();
-                EcrireParams(fichierBouton, e.Key.ToString());
-                attendBouton = false;
+                if (e.Key == Key.Escape)
+                {
+                    MessageBox.Show("Ne peut pas utiliser Échap en bouton personnalisé.", "Erreur");
+                    attendBouton = false;
+                    BtnPerso.Content = "-";
+                }
+                else
+                {
+                    BtnPerso.Content = e.Key.ToString();
+                    EcrireParams(fichierBouton, e.Key.ToString());
+                    attendBouton = false;
+                }
             }
         }
 

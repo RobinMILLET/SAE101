@@ -53,7 +53,6 @@
     <None Remove="img\record.png" />
     <None Remove="img\transition.png" />
     <None Remove="img\vague.png" />
-    <None Remove="mondeBloque.png" />
     <None Remove="police\police.ttf" />
   </ItemGroup>
 
@@ -95,10 +94,6 @@
 
   <ItemGroup>
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="mondeBloque.png" />
   </ItemGroup>
 
   <ItemGroup>

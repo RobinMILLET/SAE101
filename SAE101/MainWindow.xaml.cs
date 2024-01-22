@@ -40,10 +40,13 @@ namespace SAE101
         private RadioButton[] paramsIPS;
         private readonly string fichierIPS = "/ips.txt";
 
+        // Pause
+        private bool pause = false;
+
         // Score
         private double score = 0;
         private int stage = 0;
-        // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
+        // 0: Menu, 1,2: Menu->Jeu, 3: Jeu, 4,5: Jeu->Menu
         private readonly string fichierScore = "/score.txt";
         private int recordJoueur;
         
@@ -282,6 +285,7 @@ namespace SAE101
 
         private void MoteurDeJeu(object objet, EventArgs e)
         {
+            if (pause) return;
 #if DEBUG
             chronoDEBUG.Restart();
 #endif
@@ -777,6 +781,10 @@ namespace SAE101
                     toutBoutonEnfonce[i] = true;
                 }
             }
+            if (e.Key == Key.Escape)
+            {
+                Pause();
+            }
             if (btnUtilise && e.Key == btnPerso)
             {
                 btnAppui = true;
@@ -1005,7 +1013,7 @@ namespace SAE101
 
         private void MontrerOptions(object sender, MouseButtonEventArgs e)
         {
-            if (stage != 0) return;
+            if (stage != 0 && !pause) return;
             if (options == null)
             {
                 options = new Options();
@@ -1067,18 +1075,19 @@ namespace SAE101
             if (MondeDebloque(iconeMondeMenu))
             {
                 lbPointRequis.Content = "";
-                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+                iconeMonde = iconesMonde[iconeMondeMenu];
                 lbConfirmerMonde.Visibility = Visibility.Visible;
             }
             else
             {
                 lbPointRequis.Content = $"{paliersDebloquageMonde[iconeMondeMenu - 1]}pts requis";
-                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/mondeBloque.png"));
+                iconeMonde = iconesMonde[0];
                 lbConfirmerMonde.Visibility = Visibility.Hidden;
             }
             IconeMonde.Background = iconeMonde;
             lbMonde.Content = $"Monde {iconeMondeMenu}";
         }
+
 
         private void ConfirmerMonde(object sender, MouseButtonEventArgs e)
         {
@@ -1087,9 +1096,41 @@ namespace SAE101
             Menu.Visibility = Visibility.Visible;
             PlacerTextures();
         }
+
+
         private bool MondeDebloque(int numMonde)
         {
             return recordJoueur >= paliersDebloquageMonde[numMonde - 1];
+        }
+
+
+        private void Pause()
+        {
+            if (stage != 3) return;
+            pause = !pause;
+            if (pause)
+            {
+                menuPause.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                menuPause.Visibility = Visibility.Hidden;
+            }
+        }
+
+
+        private void btnReprendre_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (options != null && options.Visibility == Visibility.Visible) return;
+            AppliqueOptions();
+            Pause();
+        }
+
+
+        private void btnQuitterPartie_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TesterScore();
+            this.Close();
         }
     }
 }
