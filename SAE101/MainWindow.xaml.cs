@@ -45,6 +45,7 @@ namespace SAE101
         private int stage = 1;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
         private readonly string fichierScore = "/score.txt";
+        int recordJoueur;
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -111,6 +112,7 @@ namespace SAE101
         private int monde = 1;
         private int iconeMondeMenu = 1;
         private ImageBrush iconeMonde = new ImageBrush();
+        private readonly int[] paliersDebloquageMonde = new int[4] { 0, 100, 200, 500 };
 
         // Variables pour le DEBUG
         private string dir;
@@ -193,7 +195,8 @@ namespace SAE101
             tickParImage = Obtenir(fichierIPS) + 1;
 
             // Score et Vitesse
-            lbRecord.Content = Obtenir(fichierScore);
+            recordJoueur = Obtenir(fichierScore);
+            lbRecord.Content = recordJoueur;
             vitesse = vitesseInit;
 
 #if DEBUG
@@ -738,6 +741,7 @@ namespace SAE101
                     $"numeroDeMonde : {monde}\n" +
                     $"transition: {positionXtransition}\n" +
                     $"score : {FormatDebug(score)}\n" +
+                    $"record : {recordJoueur}\n" +
                     $"vie : {vie}\n" +
                     $"invinc : {invincible}\n" +
                     $"btnPerso : {btnUtilise} -> {btnPerso}\n" +
@@ -925,7 +929,8 @@ namespace SAE101
         {
             if (score > Obtenir(fichierScore))
             {
-                lbRecord.Content = (int)score;
+                recordJoueur = (int)score;
+                lbRecord.Content = recordJoueur;
                 EcrireScore(fichierScore, ((int)Math.Round(score, 0)).ToString());
             }
         }
@@ -1023,16 +1028,32 @@ namespace SAE101
         }
         private void AffichageIconeMonde()
         {
-            iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
-            IconeMonde.Background = iconeMonde;
+            if (MondeDebloque(iconeMondeMenu))
+            {
+                lbPointRequis.Content = "";
+                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+                IconeMonde.Background = iconeMonde;
+                lbConfirmerMonde.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lbPointRequis.Content = $"{paliersDebloquageMonde[iconeMondeMenu - 1]}pts requis";
+                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/mondeBloque.png"));
+                IconeMonde.Background = iconeMonde;
+                lbConfirmerMonde.Visibility = Visibility.Hidden;
+            }
             lbMonde.Content = $"Monde {iconeMondeMenu}";
         }
-
         private void ConfirmerMonde(object sender, MouseButtonEventArgs e)
         {
             monde = iconeMondeMenu;
             menuMonde.Visibility = Visibility.Hidden;
             Menu.Visibility = Visibility.Visible;
+            PlacerTextures();
+        }
+        private bool MondeDebloque(int numMonde)
+        {
+            return recordJoueur >= paliersDebloquageMonde[numMonde - 1];
         }
     }
 }

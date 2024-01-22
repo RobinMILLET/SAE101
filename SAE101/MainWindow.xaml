@@ -257,6 +257,16 @@
                     </Canvas.Background>
                 </Canvas>
                 <Label
+                x:Name="lbPointRequis"
+                Margin="-40,150,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content=""
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="Red" >
+                </Label>
+                <Label
                 x:Name="lbMonde"
                 Margin="-40,450,0,0"
                 HorizontalAlignment="Center"
