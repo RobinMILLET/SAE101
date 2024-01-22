@@ -45,7 +45,7 @@ namespace SAE101
         private int stage = 1;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
         private readonly string fichierScore = "/score.txt";
-        int recordJoueur;
+        private int recordJoueur;
         
         // Moteur
         private DispatcherTimer Horloge = new DispatcherTimer();
@@ -927,14 +927,25 @@ namespace SAE101
 
         private void TesterScore()
         {
-            if (score > Obtenir(fichierScore))
+            if (score > recordJoueur)
             {
+                NouveauMonde();
                 recordJoueur = (int)score;
                 lbRecord.Content = recordJoueur;
                 EcrireScore(fichierScore, ((int)Math.Round(score, 0)).ToString());
             }
         }
-
+        private void NouveauMonde()
+        {
+            foreach (int palier in paliersDebloquageMonde)
+            {
+                if (score >= palier && recordJoueur < palier)
+                {
+                    lbNouvMonde.Visibility = Visibility.Visible;
+                    break;
+                }
+            }
+        }
 
         private void AfficheVie()
         {
@@ -1009,6 +1020,7 @@ namespace SAE101
         {
             Menu.Visibility = Visibility.Hidden;
             menuMonde.Visibility = Visibility.Visible;
+            lbNouvMonde.Visibility = Visibility.Hidden;
         }
 
         private void MondeSuivant(object sender, MouseButtonEventArgs e)

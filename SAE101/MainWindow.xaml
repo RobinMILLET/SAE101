@@ -173,11 +173,18 @@
                     </Canvas.Background>
                 </Canvas>
                 <Label
-                x:Name="titre"
-                Margin="75,75,0,0"
-                Content="FISH"
+                x:Name="titre1"
+                Margin="75,20,0,0"
+                Content="MAREE"
                 FontFamily="{StaticResource Police}"
-                FontSize="120"
+                FontSize="96"
+                Foreground="White" />
+                <Label
+                x:Name="titre2"
+                Margin="75,120,0,0"
+                Content="BASSE"
+                FontFamily="{StaticResource Police}"
+                FontSize="96"
                 Foreground="White" />
                 <Label
                 x:Name="btnJouer"
@@ -202,6 +209,16 @@
                 Foreground="White"
                 MouseEnter="SurvolEntrée"
                 MouseLeave="SurvolSortie" MouseLeftButtonUp="MenuMonde" />
+                <Label
+                x:Name="lbNouvMonde"
+                Margin="240,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="!"
+                Visibility="Hidden"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="yellow"/>
                 <Label
                 x:Name="btnParametre"
                 Margin="75,150,0,0"
@@ -316,6 +333,51 @@
                 MouseLeave="SurvolSortie"
                 MouseLeftButtonUp="ConfirmerMonde" >
                 </Label>
+            </Grid>
+            <Grid x:Name="menuPause" Width="400" Height="400" Margin="0,0,0,0" Visibility="hidden" Background="#4C000000" Panel.ZIndex="110" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="425" Canvas.Top="127">
+                <Label
+                x:Name="lbPause"
+                Margin="0,-300,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="Pause"
+                FontFamily="{StaticResource Police}"
+                FontSize="48"
+                Foreground="White"
+                Panel.ZIndex="111"/>
+                <Label
+                x:Name="btnReprendre"
+                Margin="0,0,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="Reprendre"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie" />
+                <Label
+                x:Name="btnParametrePause"
+                Margin="0,150,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="Options"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie" MouseLeftButtonUp="MontrerOptions" />
+                <Label
+                x:Name="btnQuitterPartie"
+                Margin="0,300,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="Quitter"
+                FontFamily="{StaticResource Police}"
+                FontSize="32"
+                Foreground="White"
+                MouseEnter="SurvolEntrée"
+                MouseLeave="SurvolSortie" />
             </Grid>
         </Canvas>
     </Viewbox>
