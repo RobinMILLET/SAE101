@@ -42,7 +42,7 @@ namespace SAE101
 
         // Score
         private double score = 0;
-        private int stage = 1;
+        private int stage = 0;
         // 1: Menu, 2: Menu->Jeu, 3: Jeu, 4: Jeu->Menu
         private readonly string fichierScore = "/score.txt";
         private int recordJoueur;
@@ -111,6 +111,7 @@ namespace SAE101
         private readonly int nbMondes = 4;
         private int monde = 1;
         private int iconeMondeMenu = 1;
+        private ImageBrush[] iconesMonde;
         private ImageBrush iconeMonde = new ImageBrush();
         private readonly int[] paliersDebloquageMonde = new int[4] { 0, 100, 200, 500 };
 
@@ -221,6 +222,7 @@ namespace SAE101
 
             // Collision
             verifCollision = (verifCollision.Item1 + X, verifCollision.Item2 + X);
+            iconesMonde = new ImageBrush[nbMondes + 1];
 
             // Préparation du Décor
             elements = new (UIElement, double)[]
@@ -284,11 +286,12 @@ namespace SAE101
             chronoDEBUG.Restart();
 #endif
 
-            if (stage == 2 || stage == 3) { DetecteAppui(); }
+            if (stage == 2 || stage == 3) DetecteAppui();
             else { boutonActif = false; }
  
             GereObstacles();
             PhysiqueJoueur();
+
             if (stage == 3)
             {
                 vitesse += 0.001;
@@ -297,15 +300,15 @@ namespace SAE101
             }
 
             if (stage != 2) Apparition();
-            if (stage == 1) ReinitScore();
+            if (stage == 0) ReinitScore();
 
-            score += vitesse / 100;
+            if (stage == 0 || stage == 3) score += vitesse / 100;
 
             if (tick >= tickParImage)
             {
                 tick = 0;
-                if (stage == 2) { Transition(1); }
-                else if (stage == 4) { Transition(-1); }
+                if (stage == 1 || stage == 2) { Transition(1); }
+                else if (stage == 4 || stage == 5) { Transition(-1); }
 
                 BougerDecor();
                 Affiche();
@@ -460,7 +463,7 @@ namespace SAE101
                 if (prochaineApparition[i] < score)
                 {
                     Random rd = new Random();
-                    prochaineApparition[i] += rd.Next(borneApparition.Item1, borneApparition.Item2)/10.0;
+                    prochaineApparition[i] += rd.Next(borneApparition.Item1, borneApparition.Item2) / 10.0;
                     switch (i)
                     {
                         case 0: ApparitionAir(); break; // Air
@@ -678,6 +681,13 @@ namespace SAE101
             {
                 textureCorail[i] = ObtenirPNG($"/img/obstacles/fond/corail/corail{i + 1}.png");
             }
+
+            // Icones
+            iconesMonde[0] = ObtenirPNG("/img/iconesMondes/mondeBloque.png");
+            for (int i = 1; i <= nbMondes; i++)
+            {
+                iconesMonde[i] = ObtenirPNG($"/img/iconesMondes/monde{i}.png");
+            }
         }
 
 
@@ -811,29 +821,7 @@ namespace SAE101
 
         private void Jouer(object sender, MouseButtonEventArgs e)
         {
-            if (options != null)
-            {
-                string contenu = options.BtnPerso.Content.ToString();
-                if ( contenu == "..." || contenu == "-")
-                {
-                    btnUtilise = false;
-                }
-                else
-                {
-                    object temp;
-                    btnUtilise = Enum.TryParse(typeof(Key), contenu, out temp);
-                    if (temp != null) btnPerso = (Key)temp;
-                }
-                for (int i = 0; i < paramsIPS.Length; i++)
-                {
-                    if (paramsIPS[i].IsChecked == true)
-                    {
-                        tickParImage = i + 1; break;
-                    }
-                }
-                options.BtnReinitScore.IsEnabled = true;
-            }
-            if (stage == 1 && (options == null || options.Visibility == Visibility.Hidden)) stage = 2;
+            if (stage == 0 && (options == null || options.Visibility == Visibility.Hidden)) stage = 1;
         }
 
 
@@ -851,8 +839,9 @@ namespace SAE101
             {
                 Menu.Opacity -= 0.05 * tickParImage;
 
-                if (positionXtransition >= 1000)
+                if (positionXtransition >= 1000 && stage == 1)
                 {
+                    AppliqueOptions();
                     obstacles.ForEach(obstacle => obstacle.RetireObstacle(Canvas));
                     obstacles.Clear();
                     lbDistance.Visibility = Visibility.Visible;
@@ -861,35 +850,64 @@ namespace SAE101
                     Vie.Visibility = Visibility.Visible;
                     AfficheVie();
                     score = 0;
-                    if (positionXtransition >= 3300)
-                    {
-                        Menu.Visibility = Visibility.Hidden;
-                        ProchaineApparition();
-                        stage = 3;
-                        Menu.Opacity = 0;
-                    }
+                    stage = 2;
+                }
+                else if (positionXtransition >= 3300)
+                {
+                    Menu.Visibility = Visibility.Hidden;
+                    ProchaineApparition();
+                    stage = 3;
+                    Menu.Opacity = 0;
                 }
             }
             else
             {
-                if (positionXtransition <= 1000)
+                if (positionXtransition <= 1000 && stage == 4)
                 {
                     Vie.Visibility = Visibility.Hidden;
                     lbDistance.Visibility = Visibility.Hidden;
                     vitesse = vitesseInit;
                     ProchaineApparition();
-                    if (positionXtransition <= 500)
+                    stage = 5;
+                }
+                else if (positionXtransition <= 500)
+                {
+                    Menu.Opacity += 0.05 * tickParImage;
+                    Menu.Visibility = Visibility.Visible;
+                    
+                    if (positionXtransition <= 0)
                     {
-                        Menu.Opacity += 0.05 * tickParImage;
-                        Menu.Visibility = Visibility.Visible;
-                        if (positionXtransition <= 0)
-                        {
-                            stage = 1;
-                            Menu.Opacity = 1;
-                        }
+                        stage = 0;
+                        Menu.Opacity = 1;
                     }
                 }
             }
+        }
+
+
+        private void AppliqueOptions()
+        {
+            PlacerTextures();
+            if (options == null) return;
+            string contenu = options.BtnPerso.Content.ToString();
+            if (contenu == "..." || contenu == "-")
+            {
+                btnUtilise = false;
+            }
+            else
+            {
+                object temp;
+                btnUtilise = Enum.TryParse(typeof(Key), contenu, out temp);
+                if (temp != null) btnPerso = (Key)temp;
+            }
+            for (int i = 0; i < paramsIPS.Length; i++)
+            {
+                if (paramsIPS[i].IsChecked == true)
+                {
+                    tickParImage = i + 1; break;
+                }
+            }
+            options.BtnReinitScore.IsEnabled = true;
         }
 
 
@@ -987,7 +1005,7 @@ namespace SAE101
 
         private void MontrerOptions(object sender, MouseButtonEventArgs e)
         {
-            if (stage != 1) return;
+            if (stage != 0) return;
             if (options == null)
             {
                 options = new Options();
@@ -1016,12 +1034,15 @@ namespace SAE101
             }
         }
 
+
         private void MenuMonde(object sender, MouseButtonEventArgs e)
         {
+            if (stage !=0) return;
             Menu.Visibility = Visibility.Hidden;
             menuMonde.Visibility = Visibility.Visible;
             lbNouvMonde.Visibility = Visibility.Hidden;
         }
+
 
         private void MondeSuivant(object sender, MouseButtonEventArgs e)
         {
@@ -1031,6 +1052,7 @@ namespace SAE101
             AffichageIconeMonde();
         }
 
+
         private void MondePrécédent(object sender, MouseButtonEventArgs e)
         {
             iconeMondeMenu--;
@@ -1038,24 +1060,15 @@ namespace SAE101
             lbMondeSuivant.Visibility = Visibility.Visible;
             AffichageIconeMonde();
         }
+
+
         private void AffichageIconeMonde()
         {
-            if (MondeDebloque(iconeMondeMenu))
-            {
-                lbPointRequis.Content = "";
-                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
-                IconeMonde.Background = iconeMonde;
-                lbConfirmerMonde.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                lbPointRequis.Content = $"{paliersDebloquageMonde[iconeMondeMenu - 1]}pts requis";
-                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/mondeBloque.png"));
-                IconeMonde.Background = iconeMonde;
-                lbConfirmerMonde.Visibility = Visibility.Hidden;
-            }
+            iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+            IconeMonde.Background = iconeMonde;
             lbMonde.Content = $"Monde {iconeMondeMenu}";
         }
+
         private void ConfirmerMonde(object sender, MouseButtonEventArgs e)
         {
             monde = iconeMondeMenu;
