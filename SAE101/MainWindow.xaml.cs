@@ -1064,7 +1064,18 @@ namespace SAE101
 
         private void AffichageIconeMonde()
         {
-            iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+            if (MondeDebloque(iconeMondeMenu))
+            {
+                lbPointRequis.Content = "";
+                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/monde{iconeMondeMenu}.png"));
+                lbConfirmerMonde.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lbPointRequis.Content = $"{paliersDebloquageMonde[iconeMondeMenu - 1]}pts requis";
+                iconeMonde.ImageSource = new BitmapImage(new Uri(dir + $"/img/iconesMondes/mondeBloque.png"));
+                lbConfirmerMonde.Visibility = Visibility.Hidden;
+            }
             IconeMonde.Background = iconeMonde;
             lbMonde.Content = $"Monde {iconeMondeMenu}";
         }
