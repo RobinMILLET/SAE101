@@ -49,6 +49,7 @@
     <None Remove="img\iconesMondes\monde3.png" />
     <None Remove="img\iconesMondes\monde4.png" />
     <None Remove="img\iconesMondes\mondeBloque.png" />
+    <None Remove="img\poisson.ico" />
     <None Remove="img\poisson.png" />
     <None Remove="img\record.png" />
     <None Remove="img\transition.png" />
@@ -73,6 +74,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\iconesMondes\mondeBloque.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\poisson.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\poisson.png">

@@ -7,12 +7,12 @@
     xmlns:local="clr-namespace:SAE101"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="MainWindow1"
-    Title="Fish"
+    Title="Marée Basse"
     Width="1250"
     Height="750"
     Closing="StopTout"
     FocusManager.FocusedElement="{Binding ElementName=Canvas}"
-    mc:Ignorable="d" MinWidth="500" MinHeight="300" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" WindowState="Maximized" SizeToContent="Width">
+    mc:Ignorable="d" MinWidth="500" MinHeight="300" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" WindowState="Maximized" SizeToContent="Width" Icon="/img/poisson.ico">
     <Window.Resources>
         <FontFamily x:Key="Police">/SAE101;component/police/police.ttf#Minecraft</FontFamily>
     </Window.Resources>
